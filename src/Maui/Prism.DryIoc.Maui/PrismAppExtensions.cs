@@ -1,5 +1,4 @@
 using DryIoc;
-using Prism;
 
 namespace Prism.DryIoc.Maui;
 
