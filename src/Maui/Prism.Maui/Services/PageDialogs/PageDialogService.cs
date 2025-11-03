@@ -3,7 +3,7 @@ using Prism.Navigation;
 using FlowDirection = Prism.AppModel.FlowDirection;
 using MauiFlow = Microsoft.Maui.FlowDirection;
 
-namespace Prism.Services;
+namespace Prism.Services.PageDialogs;
 
 /// <summary>
 /// Implementation of the <see cref="IPageDialogService"/>

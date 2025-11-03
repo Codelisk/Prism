@@ -1,7 +1,8 @@
 using System.Reactive.Subjects;
 using Prism.Events;
+using Prism.Navigation;
 
-namespace Prism.Navigation;
+namespace Prism.Maui.Rx;
 
 internal class GlobalNavigationObserver : IGlobalNavigationObserver, IDisposable
 {

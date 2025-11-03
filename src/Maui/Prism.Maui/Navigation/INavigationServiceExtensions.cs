@@ -1,4 +1,5 @@
 using Prism.Common;
+using Prism.Extensions;
 
 namespace Prism.Navigation;
 

@@ -1,4 +1,4 @@
-﻿namespace Prism.Services;
+namespace Prism.Services.PageDialogs;
 
 /// <summary>
 /// Represents a button displayed in <see cref="IPageDialogService.DisplayActionSheetAsync(string, IActionSheetButton[])"/>

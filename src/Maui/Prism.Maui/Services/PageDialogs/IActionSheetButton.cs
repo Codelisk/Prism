@@ -1,4 +1,4 @@
-﻿namespace Prism.Services;
+namespace Prism.Services.PageDialogs;
 
 /// <summary>
 /// Convenient contract to enable executing commands directly when using <see cref="IPageDialogService.DisplayActionSheetAsync(string, IActionSheetButton[])"/>

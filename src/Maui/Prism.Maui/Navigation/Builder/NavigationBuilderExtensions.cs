@@ -1,7 +1,6 @@
 using Prism.Common;
-using Prism.Navigation.Builder;
 
-namespace Prism.Navigation;
+namespace Prism.Navigation.Builder;
 
 public static class NavigationBuilderExtensions
 {

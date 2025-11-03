@@ -1,4 +1,4 @@
-﻿namespace Prism.Services;
+namespace Prism.Services.PageDialogs;
 
 /// <summary>
 /// ActionSheetButton Base class

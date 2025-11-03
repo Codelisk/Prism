@@ -1,4 +1,4 @@
-﻿namespace Prism.Services;
+namespace Prism.Services.PageDialogs;
 
 /// <summary>
 /// Provides a Generic Implementation for IActionSheetButton

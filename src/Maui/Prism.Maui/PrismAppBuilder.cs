@@ -12,7 +12,7 @@ using Prism.Navigation;
 using Prism.Navigation.Regions;
 using Prism.Navigation.Regions.Adapters;
 using Prism.Navigation.Xaml;
-using Prism.Services;
+using Prism.Services.PageDialogs;
 using TabbedPage = Microsoft.Maui.Controls.TabbedPage;
 
 namespace Prism;

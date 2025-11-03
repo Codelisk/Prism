@@ -1,7 +1,7 @@
-﻿using DryIoc;
+using DryIoc;
 using Prism;
 
-namespace Microsoft.Maui;
+namespace Prism.DryIoc.Maui;
 
 /// <summary>
 /// Application base class using DryIoc

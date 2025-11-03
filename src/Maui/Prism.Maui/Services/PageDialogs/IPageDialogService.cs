@@ -1,7 +1,7 @@
-﻿using Prism.AppModel;
+using Prism.AppModel;
 using FlowDirection = Prism.AppModel.FlowDirection;
 
-namespace Prism.Services;
+namespace Prism.Services.PageDialogs;
 
 /// <summary>
 /// A service which provides access to the DisplayAlert and DisplayActionSheet off of the Microsoft.Maui.Controls.Page class.

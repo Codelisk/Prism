@@ -1,4 +1,4 @@
-﻿namespace System.Threading.Tasks
+namespace Prism.Extensions
 {
     /// <summary>
     /// Extension methods for the Task object.
