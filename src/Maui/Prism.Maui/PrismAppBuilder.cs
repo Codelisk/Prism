@@ -62,7 +62,7 @@ public sealed class PrismAppBuilder
                     //when this happens the PageNavigationService will take over and handle the navigation and decides whether to allow GoBack or not
                     //this means we need to check if the PageNavigationService is handling the navigation and if it is, we need to prevent the OnBackPressed logic
                     if (PageNavigationService.NavigationSource == PageNavigationSource.NavigationService)
-                        return true; 
+                        return true;
 
                     var root = ContainerLocator.Container;
                     if (root is null)
@@ -90,7 +90,7 @@ public sealed class PrismAppBuilder
                         //note: if the PageNavigationService sends the android app to the background, this can cause the CanNavigate to be called twice.
                         //if this becomes a problem, we may need to add an additional static flag to know when we are sending the app to the background to prevent the double call
                         var canNavigate = MvvmHelpers.CanNavigate(MvvmHelpers.GetTarget(window.Page), new NavigationParameters());
-                        return !canNavigate;                        
+                        return !canNavigate;
                     }
 
                     return true;

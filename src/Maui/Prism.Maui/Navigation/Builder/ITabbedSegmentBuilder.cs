@@ -18,7 +18,7 @@ public interface ITabbedSegmentBuilder
     /// <param name="segmentName">The name of the tab to select.</param>
     /// <returns>The current instance of the <see cref="ITabbedSegmentBuilder"/>.</returns>
     ITabbedSegmentBuilder SelectedTab(string segmentName);
-    
+
     /// <summary>
     /// Sets the tabbed page title
     /// </summary>

@@ -1,5 +1,3 @@
-﻿using Prism.Mvvm;
-
 namespace Prism.Navigation.Regions;
 
 /// <summary>

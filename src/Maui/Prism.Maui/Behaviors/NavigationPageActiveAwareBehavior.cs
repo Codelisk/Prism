@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using Prism.Common;
 using Prism.Extensions;
 
@@ -41,7 +41,7 @@ public class NavigationPageActiveAwareBehavior : BehaviorBase<NavigationPage>
 
     private void SetActiveAware()
     {
-        if(AssociatedObject.Parent is TabbedPage tabbed && tabbed.CurrentPage != AssociatedObject)
+        if (AssociatedObject.Parent is TabbedPage tabbed && tabbed.CurrentPage != AssociatedObject)
         {
             MvvmHelpers.InvokeViewAndViewModelAction<IActiveAware>(AssociatedObject, SetNotActive);
             AssociatedObject.Navigation.NavigationStack.ForEach(page => MvvmHelpers.InvokeViewAndViewModelAction<IActiveAware>(page, SetNotActive));
@@ -66,7 +66,7 @@ public class NavigationPageActiveAwareBehavior : BehaviorBase<NavigationPage>
 
     private void SetIsActive(IActiveAware activeAware)
     {
-        if(!activeAware.IsActive)
+        if (!activeAware.IsActive)
             activeAware.IsActive = true;
     }
 }

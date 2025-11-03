@@ -1,5 +1,3 @@
-using System;
-using System.Linq;
 using Prism.Events.Properties;
 
 namespace Prism.Events

@@ -1,8 +1,7 @@
-﻿using System.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
 using Prism.Behaviors;
 using Prism.Extensions;
-using Prism.Ioc;
 using Prism.Navigation.Xaml;
 using Prism.Properties;
 
@@ -68,7 +67,7 @@ public abstract class TargetAwareExtensionBase<T> : BindableObject, IMarkupExten
         return ProvideValue(serviceProvider);
     }
 
-    object IMarkupExtension.ProvideValue(IServiceProvider serviceProvider) => 
+    object IMarkupExtension.ProvideValue(IServiceProvider serviceProvider) =>
         ((IMarkupExtension<T>)this).ProvideValue(serviceProvider);
 
     protected abstract T ProvideValue(IServiceProvider serviceProvider);
@@ -86,10 +85,10 @@ public abstract class TargetAwareExtensionBase<T> : BindableObject, IMarkupExten
     {
         base.OnPropertyChanged(propertyName);
 
-        if(propertyName == nameof(TargetElement) || propertyName == nameof(Page))
+        if (propertyName == nameof(TargetElement) || propertyName == nameof(Page))
         {
             var source = TargetBindingContext == TargetBindingContext.Element ? TargetElement : Page;
-            if(source is not null)
+            if (source is not null)
                 SetBinding(BindingContextProperty, new Binding(nameof(BindingContext), BindingMode.OneWay, source: source));
         }
     }

@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 using Prism.Mvvm;
 
 namespace Prism.Ioc;
@@ -22,12 +22,12 @@ public static class NavigationRegistrationExtensions
             name = view.Name;
 
         container.RegisterInstance(new ViewRegistration
-            {
-                Type = ViewType.Page,
-                Name = name,
-                View = view,
-                ViewModel = viewModel
-            })
+        {
+            Type = ViewType.Page,
+            Name = name,
+            View = view,
+            ViewModel = viewModel
+        })
             .Register(view);
 
         if (viewModel != null)

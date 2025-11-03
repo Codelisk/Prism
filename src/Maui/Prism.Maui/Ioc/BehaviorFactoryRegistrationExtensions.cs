@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 using Prism.Behaviors;
 
 namespace Prism.Ioc;
@@ -14,7 +14,7 @@ public static class BehaviorFactoryRegistrationExtensions
     /// <param name="container"></param>
     /// <param name="pageBehaviorFactory"></param>
     /// <returns>The <see cref="IContainerRegistry"/>.</returns>
-    public static IContainerRegistry RegisterPageBehaviorFactory(this IContainerRegistry container, Action<Page> pageBehaviorFactory) => 
+    public static IContainerRegistry RegisterPageBehaviorFactory(this IContainerRegistry container, Action<Page> pageBehaviorFactory) =>
         container.RegisterInstance<IPageBehaviorFactory>(new DelegatePageBehaviorFactory(pageBehaviorFactory));
 
     /// <summary>

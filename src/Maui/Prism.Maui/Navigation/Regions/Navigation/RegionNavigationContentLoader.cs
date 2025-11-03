@@ -1,6 +1,5 @@
 using System.Globalization;
 using Prism.Common;
-using Prism.Ioc;
 using Prism.Mvvm;
 using Prism.Properties;
 

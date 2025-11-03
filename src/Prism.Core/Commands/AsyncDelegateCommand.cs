@@ -1,7 +1,4 @@
-﻿using System.Linq.Expressions;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Linq.Expressions;
 using System.Windows.Input;
 using Prism.Properties;
 
@@ -25,7 +22,7 @@ public class AsyncDelegateCommand : DelegateCommandBase, IAsyncCommand
     /// <param name="executeMethod">The <see cref="Func{Task}"/> to invoke when <see cref="ICommand.Execute(object)"/> is called.</param>
     public AsyncDelegateCommand(Func<Task> executeMethod)
 #if NET6_0_OR_GREATER
-        : this (c => executeMethod().WaitAsync(c), () => true)
+        : this(c => executeMethod().WaitAsync(c), () => true)
 #else
         : this(c => executeMethod(), () => true)
 #endif

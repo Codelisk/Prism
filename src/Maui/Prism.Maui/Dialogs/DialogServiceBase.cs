@@ -1,4 +1,4 @@
-﻿using Prism.Commands;
+using Prism.Commands;
 using Prism.Common;
 using Prism.Dialogs.Xaml;
 using Prism.Mvvm;
@@ -27,7 +27,7 @@ public abstract class DialogServiceBase : IDialogService
             // This needs to be resolved when called as a Module could load any time
             // and register new dialogs
             var registry = container.Resolve<IDialogViewRegistry>();
-            var view = registry.CreateView(container, UriParsingHelper.GetSegmentName(name)) as View 
+            var view = registry.CreateView(container, UriParsingHelper.GetSegmentName(name)) as View
                 ?? throw new ViewCreationException(name, ViewType.Dialog);
 
             dialogModal = container.Resolve<IDialogContainer>();
@@ -118,7 +118,7 @@ public abstract class DialogServiceBase : IDialogService
 
     private static async Task InvokeError(DialogCallback callback, Exception exception, IDialogParameters parameters)
     {
-        var result = new DialogResult 
+        var result = new DialogResult
         {
             Parameters = parameters,
             Exception = exception,

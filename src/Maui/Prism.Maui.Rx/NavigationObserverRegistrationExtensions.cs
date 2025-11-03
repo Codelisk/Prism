@@ -10,7 +10,7 @@ public static class NavigationObserverRegistrationExtensions
             return builder;
 
         s_IsRegistered = true;
-        return builder.RegisterTypes(c => 
+        return builder.RegisterTypes(c =>
             c.RegisterSingleton<IGlobalNavigationObserver, GlobalNavigationObserver>());
     }
 

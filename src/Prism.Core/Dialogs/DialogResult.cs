@@ -1,5 +1,3 @@
-﻿using System;
-
 #nullable enable
 namespace Prism.Dialogs;
 

@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Threading.Tasks;
 using Prism.Common;
 
 namespace Prism.Dialogs;
@@ -14,8 +10,8 @@ namespace Prism.Dialogs;
 public readonly struct DialogCallback
 {
     private readonly bool _empty = false;
-    private readonly List<MulticastDelegate> _callbacks = new ();
-    private readonly MulticastExceptionHandler _errorCallbacks = new ();
+    private readonly List<MulticastDelegate> _callbacks = new();
+    private readonly MulticastExceptionHandler _errorCallbacks = new();
 
     /// <summary>
     /// Creates a new instance of a DialogCallback
@@ -56,9 +52,9 @@ public readonly struct DialogCallback
             await _errorCallbacks.HandleAsync(result.Exception, result);
             return;
         }
-        else if(_callbacks.Any())
+        else if (_callbacks.Any())
         {
-            foreach(var callback in _callbacks)
+            foreach (var callback in _callbacks)
             {
                 await Process(callback, result);
             }

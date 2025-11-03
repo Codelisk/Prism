@@ -1,5 +1,3 @@
-﻿using Microsoft.Maui.Controls;
-
 [assembly: XmlnsDefinition("http://prismlibrary.com", "Prism")]
 [assembly: XmlnsDefinition("http://prismlibrary.com", "Prism.Behaviors")]
 [assembly: XmlnsDefinition("http://prismlibrary.com", "Prism.Controls")]

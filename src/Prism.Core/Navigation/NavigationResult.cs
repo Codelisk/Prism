@@ -1,6 +1,3 @@
-﻿using System;
-using Prism.Navigation.Regions;
-
 namespace Prism.Navigation;
 
 #nullable enable

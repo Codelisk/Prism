@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using Prism.Extensions;
 using Prism.Navigation.Xaml;
 
@@ -38,7 +38,7 @@ internal class ElementParentedCallbackBehavior : Behavior<VisualElement>
             return;
         else if (view.TryGetParentPage(out var page))
         {
-            if(page.GetContainerProvider() is not null)
+            if (page.GetContainerProvider() is not null)
             {
                 view.ParentChanged -= OnParentChanged;
                 _callback();
@@ -59,7 +59,7 @@ internal class ElementParentedCallbackBehavior : Behavior<VisualElement>
 
         var container = page.GetContainerProvider();
 
-        if(container is not null)
+        if (container is not null)
         {
             page.PropertyChanged -= PagePropertyChanged;
             _callback();

@@ -1,6 +1,5 @@
-﻿using System.Windows.Input;
+using System.Windows.Input;
 using Microsoft.Extensions.Logging;
-using Prism.Ioc;
 using Prism.Navigation.Xaml;
 using Prism.Xaml;
 

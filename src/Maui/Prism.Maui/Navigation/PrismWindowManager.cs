@@ -1,6 +1,3 @@
-using Prism.Behaviors;
-using Prism.Extensions;
-
 namespace Prism.Navigation;
 
 internal sealed class PrismWindowManager : IWindowCreator, IWindowManager
@@ -38,7 +35,7 @@ internal sealed class PrismWindowManager : IWindowCreator, IWindowManager
         else
             _application.OpenWindow(window);
 
-        foreach(var pWindow in Windows.OfType<PrismWindow>().Where(x => x.IsActive))
+        foreach (var pWindow in Windows.OfType<PrismWindow>().Where(x => x.IsActive))
         {
             pWindow.IsActive = window.Equals(pWindow);
         }

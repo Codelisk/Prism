@@ -1,5 +1,3 @@
-﻿using Prism.Ioc;
-
 namespace Prism.Navigation.Regions;
 
 internal class DefaultRegionManagerAccessor : IRegionManagerAccessor

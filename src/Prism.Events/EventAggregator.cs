@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Threading;
-
 namespace Prism.Events
 {
     /// <summary>
@@ -26,7 +21,7 @@ namespace Prism.Events
         /// </summary>
         public EventAggregator()
         {
-            if(_current is null)
+            if (_current is null)
             {
                 _current = this;
             }

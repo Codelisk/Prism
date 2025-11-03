@@ -1,4 +1,4 @@
-﻿namespace Prism.Navigation;
+namespace Prism.Navigation;
 
 public static class KnownNavigationParameters
 {
@@ -11,7 +11,7 @@ public static class KnownNavigationParameters
     /// Used to select an existing Tab when navigating to a TabbedPage.
     /// </summary>
     public const string SelectedTab = "selectedTab";
-    
+
     /// <summary>
     /// Used to set the title to a TabbedPage.
     /// </summary>

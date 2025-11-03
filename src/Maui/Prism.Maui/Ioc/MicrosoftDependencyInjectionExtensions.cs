@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 using Prism.Mvvm;
 
 namespace Prism.Ioc;
@@ -31,12 +31,12 @@ public static class MicrosoftDependencyInjectionExtensions
             name = view.Name;
 
         services.AddSingleton(new ViewRegistration
-            {
-                Type = ViewType.Page,
-                Name = name,
-                View = view,
-                ViewModel = viewModel
-            })
+        {
+            Type = ViewType.Page,
+            Name = name,
+            View = view,
+            ViewModel = viewModel
+        })
             .AddTransient(view);
 
         if (viewModel != null)

@@ -1,7 +1,3 @@
-using System;
-using Prism.Ioc;
-using Prism.Navigation;
-
 namespace Prism.Navigation.Regions
 {
     /// <summary>

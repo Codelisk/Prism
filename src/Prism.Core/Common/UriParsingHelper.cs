@@ -1,6 +1,3 @@
-using Prism.Dialogs;
-using Prism.Navigation;
-
 #nullable enable
 namespace Prism.Common
 {

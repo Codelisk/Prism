@@ -2,8 +2,6 @@ using System.ComponentModel;
 using Prism.AppModel;
 using Prism.Common;
 using Prism.Dialogs;
-using Prism.Ioc;
-using Prism.Navigation.Xaml;
 using TabbedPage = Microsoft.Maui.Controls.TabbedPage;
 
 namespace Prism.Navigation

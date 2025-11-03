@@ -1,5 +1,3 @@
-using System.Runtime.Serialization;
-
 namespace Prism.Navigation.Regions.Behaviors;
 
 /// <summary>

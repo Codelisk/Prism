@@ -1,6 +1,4 @@
-using System;
 using System.Globalization;
-using Prism.Navigation;
 
 namespace Prism.Navigation.Regions
 {

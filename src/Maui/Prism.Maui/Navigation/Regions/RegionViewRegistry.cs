@@ -1,8 +1,7 @@
-﻿using System.Globalization;
+using System.Globalization;
 using System.Reflection;
 using Prism.Common;
 using Prism.Events;
-using Prism.Ioc;
 using Prism.Mvvm;
 using Prism.Properties;
 

@@ -13,7 +13,7 @@ namespace Prism.Navigation;
 /// </summary>
 public class PageNavigationService : INavigationService, IRegistryAware
 {
-    private static readonly SemaphoreSlim _semaphore = new (1, 1);
+    private static readonly SemaphoreSlim _semaphore = new(1, 1);
     private static readonly TimeSpan _minTimeBetweenNavigations = TimeSpan.FromMilliseconds(150);
     private static DateTime _lastNavigate;
     internal const string RemovePageRelativePath = "../";
@@ -32,7 +32,7 @@ public class PageNavigationService : INavigationService, IRegistryAware
     {
         get
         {
-            if(_window is null && _pageAccessor.Page is not null)
+            if (_window is null && _pageAccessor.Page is not null)
             {
                 _window = _pageAccessor.Page.GetParentWindow();
             }
@@ -158,7 +158,7 @@ public class PageNavigationService : INavigationService, IRegistryAware
 
             var pagesToDestroy = page.Navigation.NavigationStack.ToList(); // get all pages to destroy
             pagesToDestroy.Reverse(); // destroy them in reverse order
-            var goBackPage = pagesToDestroy.FirstOrDefault(p => ViewModelLocator.GetNavigationName(p) == viewName) 
+            var goBackPage = pagesToDestroy.FirstOrDefault(p => ViewModelLocator.GetNavigationName(p) == viewName)
                 ?? throw new NavigationException(NavigationException.GoBackRequiresNavigationPage); // find the go back page
             var index = pagesToDestroy.IndexOf(goBackPage);
             pagesToDestroy.RemoveRange(index, pagesToDestroy.Count - index); // don't destroy pages from the go back page to the root page
@@ -166,7 +166,7 @@ public class PageNavigationService : INavigationService, IRegistryAware
 
             bool animated = !parameters.ContainsKey(KnownNavigationParameters.Animated) || parameters.GetValue<bool>(KnownNavigationParameters.Animated);
             NavigationSource = PageNavigationSource.NavigationService;
-            foreach(var removePage in pagesToRemove)
+            foreach (var removePage in pagesToRemove)
             {
                 page.Navigation.RemovePage(removePage);
             }
@@ -883,15 +883,15 @@ public class PageNavigationService : INavigationService, IRegistryAware
 
             return page;
         }
-        catch(NavigationException)
+        catch (NavigationException)
         {
             throw;
         }
-        catch(KeyNotFoundException knfe)
+        catch (KeyNotFoundException knfe)
         {
             throw new NavigationException(NavigationException.NoPageIsRegistered, segmentName, knfe);
         }
-        catch(ViewModelCreationException vmce)
+        catch (ViewModelCreationException vmce)
         {
             throw new NavigationException(NavigationException.ErrorCreatingViewModel, segmentName, _pageAccessor.Page, vmce);
         }
@@ -903,7 +903,7 @@ public class PageNavigationService : INavigationService, IRegistryAware
         catch (Exception ex)
         {
             var inner = ex.InnerException;
-            while(inner is not null)
+            while (inner is not null)
             {
                 if (inner.Message.Contains("thread with a dispatcher"))
                     throw new NavigationException(NavigationException.UnsupportedMauiCreation, segmentName, _pageAccessor.Page, ex);
@@ -941,7 +941,7 @@ public class PageNavigationService : INavigationService, IRegistryAware
             var tabToCreate = HttpUtility.UrlDecode(tabToCreateEncoded);
             var tabSegments = tabToCreate.Split('/', '|');
             NavigationPage navigationPage = null;
-            for(int i = 0; i < tabSegments.Length; i++)
+            for (int i = 0; i < tabSegments.Length; i++)
             {
                 var tabSegment = tabSegments[i];
                 var child = CreatePageFromSegment(tabSegment);
@@ -951,18 +951,18 @@ public class PageNavigationService : INavigationService, IRegistryAware
                     navigationPage = navPage;
                     await MvvmHelpers.OnInitializedAsync(child, childParameters);
                 }
-                else if(i == 0)
+                else if (i == 0)
                 {
                     tabbedPage.Children.Add(child);
                     break;
                 }
-                else if(i > 0 && navigationPage is not null)
+                else if (i > 0 && navigationPage is not null)
                 {
                     await navigationPage.Navigation.PushAsync(child);
                 }
             }
 
-            if(navigationPage is null)
+            if (navigationPage is null)
             {
                 continue;
             }
@@ -973,7 +973,7 @@ public class PageNavigationService : INavigationService, IRegistryAware
                 navigationPage.Title = XamlTab.GetTitle(navigationPage.RootPage);
                 navigationPage.IconImageSource = XamlTab.GetIconImageSource(navigationPage.RootPage);
             }
-            else if(!navigationPage.IsSet(Page.TitleProperty))
+            else if (!navigationPage.IsSet(Page.TitleProperty))
             {
                 var source = navigationPage.IsSet(XamlTab.TitleBindingSourceProperty) ?
                 XamlTab.GetTitleBindingSource(navigationPage) :

@@ -56,7 +56,7 @@ public static class NavigationBuilderExtensions
     /// <typeparam name="TViewModel">The ViewModel to navigate to.</typeparam>
     /// <param name="builder">The <see cref="INavigationBuilder"/>.</param>
     /// <returns>The <see cref="INavigationBuilder"/>.</returns>
-    public static ICreateTabBuilder AddSegment<TViewModel>(this ICreateTabBuilder builder)  =>
+    public static ICreateTabBuilder AddSegment<TViewModel>(this ICreateTabBuilder builder) =>
         builder.AddSegment<TViewModel>(b => { });
 
     public static ICreateTabBuilder AddSegment<TViewModel>(this ICreateTabBuilder builder, Action<ISegmentBuilder> configureSegment) =>

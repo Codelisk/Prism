@@ -1,6 +1,3 @@
-using System;
-using System.Threading.Tasks;
-
 #nullable enable
 namespace Prism.Dialogs;
 
@@ -60,7 +57,7 @@ public struct DialogCloseListener
     /// <param name="result"></param>
     public async void Invoke(IDialogResult result)
     {
-        switch(_callback)
+        switch (_callback)
         {
             case Action<IDialogResult> actionCallback:
                 actionCallback(result);

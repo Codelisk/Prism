@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using Prism.Ioc;
+using System.ComponentModel;
 
 namespace Prism.Navigation.Regions.Behaviors;
 

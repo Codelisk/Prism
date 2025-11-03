@@ -61,7 +61,7 @@ public static class ViewModelLocator
     {
         if (newValue == null || bindable.BindingContext != null)
             return;
-        else if(newValue is Type)
+        else if (newValue is Type)
             bindable.SetValue(AutowireViewModelProperty, ViewModelLocatorBehavior.Automatic);
     }
 
@@ -79,7 +79,7 @@ public static class ViewModelLocator
             foreach (var child in tabbed.Children)
                 Autowire(child);
         }
-        else if(view is NavigationPage navigationPage && navigationPage.RootPage is not null)
+        else if (view is NavigationPage navigationPage && navigationPage.RootPage is not null)
         {
             Autowire(navigationPage.RootPage);
         }

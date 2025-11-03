@@ -1,5 +1,3 @@
-﻿using Prism.Ioc;
-
 namespace Prism.Behaviors;
 
 internal class DelegatePageBehaviorFactory : IPageBehaviorFactory

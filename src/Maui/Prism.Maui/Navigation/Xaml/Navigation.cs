@@ -100,7 +100,7 @@ public static class Navigation
     internal static void ClearChildRegions(this Page page)
     {
         var children = page.GetChildRegions();
-        if(children is not null)
+        if (children is not null)
         {
             children.Dispose();
             page.SetValue(ChildMvvmViewsProperty, null);
@@ -150,7 +150,7 @@ public static class Navigation
         var container = bindable.GetValue(NavigationScopeProperty) as IContainerProvider;
         if (container is not null)
             return container;
-        else if(bindable is Page page)
+        else if (bindable is Page page)
         {
             if (page.Parent is FlyoutPage flyout && flyout.Flyout == page)
                 return flyout.GetContainerProvider();

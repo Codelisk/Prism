@@ -1,5 +1,3 @@
-﻿using System.Linq;
-
 namespace Prism.Modularity
 {
     /// <summary>

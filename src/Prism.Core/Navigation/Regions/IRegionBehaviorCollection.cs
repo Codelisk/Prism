@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace Prism.Navigation.Regions
 {
     /// <summary>

@@ -1,5 +1,4 @@
-﻿using Prism.Common;
-using Prism.Ioc;
+using Prism.Common;
 using Prism.Properties;
 
 namespace Prism.Navigation.Regions.Navigation;
