@@ -12,7 +12,7 @@
   </ItemGroup>
   <!-- Maui -->
   <ItemGroup Condition=" $(UseMaui) == 'true' ">
-    <PackageVersion Include="Microsoft.Maui.Controls" Version="10.0.0-rc.2.25504.7" Condition="$(MSBuildProjectName.StartsWith('Prism.'))" />
+    <PackageVersion Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" Condition="$(MSBuildProjectName.StartsWith('Prism.'))" />
     <PackageVersion Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" Condition="!$(MSBuildProjectName.StartsWith('Prism.'))" />
   </ItemGroup>
   <!-- Uno
@@ -51,7 +51,7 @@
     <PackageVersion Include="Uno.Toolkit.WinUI.Material" Version="6.0.24" />
     <PackageVersion Include="Uno.Toolkit.WinUI" Version="6.0.24" />
     <PackageVersion Include="Uno.Extensions.Hosting.WinUI" Version="4.2.2" />
-    <PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="8.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="$(MicrosoftVersion)" />
     <PackageVersion Include="Xamarin.Google.Android.Material" Version="1.10.0.3" />
     <PackageVersion Include="Uno.UniversalImageLoader" Version="1.9.36" />
     <PackageVersion Include="Microsoft.Windows.Compatibility" Version="8.0.0" />
@@ -83,8 +83,8 @@
     <PackageVersion Include="Xunit.StaFact" Version="1.1.11" />
   </ItemGroup>
   <ItemGroup Condition=" $(UseMaui) != 'true' ">
-    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
-    <PackageVersion Include="Microsoft.Extensions.Logging" Version="7.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="$(MicrosoftVersion)" />
+    <PackageVersion Include="Microsoft.Extensions.Logging" Version="$(MicrosoftVersion)" />
   </ItemGroup>
   <!-- UI Tests -->
   <ItemGroup>
