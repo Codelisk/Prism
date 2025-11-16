@@ -11,6 +11,7 @@
   <ItemGroup>
     <PackageReference Include="Prism.Container.DryIoc" />
     <PackageReference Include="Microsoft.Maui.Controls" />
+    <PackageReference Include="Microsoft.Extensions.Logging" />
   </ItemGroup>
 
   <ItemGroup>
