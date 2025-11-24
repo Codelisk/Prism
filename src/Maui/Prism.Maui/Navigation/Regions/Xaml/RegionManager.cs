@@ -13,7 +13,7 @@ namespace Prism.Navigation.Regions.Xaml;
 /// </summary>
 public static class RegionManager
 {
-    private static readonly WeakDelegatesManager updatingRegionsListeners = new WeakDelegatesManager();
+    private static readonly WeakDelegatesManager updatingRegionsListeners = new ();
 
     private static readonly BindableProperty ObservableRegionProperty =
         BindableProperty.CreateAttached("ObservableRegion", typeof(ObservableObject<IRegion>), typeof(RegionManager), null);
@@ -52,12 +52,29 @@ public static class RegionManager
     public static readonly BindableProperty RegionContextProperty =
         BindableProperty.CreateAttached("RegionContext", typeof(object), typeof(RegionManager), null, propertyChanged: OnRegionContextChanged);
 
+    /// <summary>
+    /// Sets the default view to be displayed in a region when it is created.
+    /// </summary>
     public static readonly BindableProperty DefaultViewProperty =
         BindableProperty.CreateAttached("DefaultView", typeof(object), typeof(RegionManager), null);
 
+    /// <summary>
+    /// Sets the <see cref="DefaultViewProperty"/> attached property for the specified region target.
+    /// </summary>
+    /// <param name="regionTarget">The <see cref="VisualElement"/> that will host the default view.</param>
+    /// <param name="viewNameTypeOrInstance">
+    /// The default view to display in the region. This can be a view name, a type, or an instance of the view.
+    /// </param>
     public static void SetDefaultView(VisualElement regionTarget, object viewNameTypeOrInstance) =>
         regionTarget.SetValue(DefaultViewProperty, viewNameTypeOrInstance);
 
+    /// <summary>
+    /// Gets the value of the <see cref="DefaultViewProperty"/> attached property for the specified region target.
+    /// </summary>
+    /// <param name="regionTarget">The <see cref="VisualElement"/> that hosts the default view.</param>
+    /// <returns>
+    /// The default view associated with the region. This can be a view name, a type, or an instance of the view.
+    /// </returns>
     public static object GetDefaultView(VisualElement regionTarget) =>
         regionTarget.GetValue(DefaultViewProperty);
 

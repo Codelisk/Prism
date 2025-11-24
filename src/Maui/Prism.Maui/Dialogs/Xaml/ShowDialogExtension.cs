@@ -6,6 +6,7 @@ using Prism.Xaml;
 namespace Prism.Dialogs.Xaml;
 
 [ContentProperty(nameof(Name))]
+[RequireService([typeof(IProvideValueTarget)])]
 public class ShowDialogExtension : TargetAwareExtensionBase<ICommand>, ICommand
 {
     public static readonly BindableProperty NameProperty =
