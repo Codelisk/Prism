@@ -56,10 +56,11 @@ internal class RegionCollection : IRegionCollection
             throw new InvalidOperationException(Resources.RegionNameCannotBeEmptyException);
         }
 
+        // Remove existing region with the same name to avoid duplicate registration errors
+        // This can happen when views are re-parented or navigated to multiple times
         if (GetRegionByName(region.Name) != null)
         {
-            throw new ArgumentException(string.Format(CultureInfo.InvariantCulture,
-                                                      Resources.RegionNameExistsException, region.Name));
+            Remove(region.Name);
         }
 
         _regions.Add(region);
