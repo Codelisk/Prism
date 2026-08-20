@@ -1,7 +1,7 @@
 <Project>
   <ItemGroup>
     <PackageVersion Include="DryIoc.dll" Version="6.0.0-preview-09" />
-    <PackageVersion Include="PolySharp" Version="1.15.0" />
+    <PackageVersion Include="PolySharp" Version="1.16.0" />
     <PackageVersion Include="Prism.Container.Abstractions" Version="9.0.114" />
     <PackageVersion Include="Prism.Container.DryIoc" Version="9.0.114" />
     <PackageVersion Include="Prism.Container.Unity" Version="9.0.114" />
@@ -97,7 +97,7 @@
   <ItemGroup>
     <!-- Global Packages -->
     <PackageVersion Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" />
-    <PackageVersion Include="Nerdbank.GitVersioning" Version="3.9.17-alpha" />
+    <PackageVersion Include="Nerdbank.GitVersioning" Version="3.10.91" />
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
   </ItemGroup>
 </Project>
