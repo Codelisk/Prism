@@ -22,7 +22,8 @@ namespace Prism.Commands
             _action = () =>
             {
                 action?.Invoke();
-                if (Next == null) return;
+                // A notification subscriber may synchronously detach this node.
+                if (Next == null || _inpcObject == null) return;
                 Next.UnsubscribeListener();
                 GenerateNextNode();
             };
@@ -52,11 +53,16 @@ namespace Prism.Commands
             if (_inpcObject != null)
                 _inpcObject.PropertyChanged -= OnPropertyChanged;
 
+            _inpcObject = null;
+
             Next?.UnsubscribeListener();
         }
 
         private void OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
+            // The publisher may have captured this handler before it was unsubscribed.
+            if (_inpcObject == null) return;
+
             if (e?.PropertyName == PropertyInfo.Name || string.IsNullOrEmpty(e?.PropertyName))
             {
                 _action?.Invoke();

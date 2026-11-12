@@ -25,14 +25,21 @@ on:
 
 jobs:
   build-prism-core:
-    uses: avantipoint/workflow-templates/.github/workflows/dotnet-build.yml@v1
+    uses: avantipoint/workflow-templates/.github/workflows/dotnet-build.yml@61adf86e5d3b2836b2b76fdb67cb71076521a9d7 # v2 with private feed URL secret support
     with:
       name: Build Prism.Core
       solution-path: PrismLibrary_Core.slnf
+      test-projects: |
+        tests/Prism.Core.Tests/Prism.Core.Tests.csproj
       code-sign: false
       artifact-name: Core
-      dotnet-version: 10.0.100
+      dotnet-version: |
+        10.0.100
+        11.0.100
     secrets:
+      nugetFeedUrl: ${{ secrets.IN_HOUSE_NUGET_FEED }}
+      nugetUserName: ${{ secrets.IN_HOUSE_USER }}
+      nugetToken: ${{ secrets.IN_HOUSE_API_KEY }}
       codeSignKeyVault: ${{ secrets.CodeSignKeyVault }}
       codeSignClientId: ${{ secrets.CodeSignClientId }}
       codeSignTenantId: ${{ secrets.CodeSignTenantId }}
@@ -40,14 +47,23 @@ jobs:
       codeSignCertificate: ${{ secrets.CodeSignCertificate }}
 
   build-prism-wpf:
-    uses: avantipoint/workflow-templates/.github/workflows/dotnet-build.yml@v1
+    uses: avantipoint/workflow-templates/.github/workflows/dotnet-build.yml@61adf86e5d3b2836b2b76fdb67cb71076521a9d7 # v2 with private feed URL secret support
     with:
       name: Build Prism.Wpf
       solution-path: PrismLibrary_Wpf.slnf
+      test-projects: |
+        tests/Wpf/Prism.Wpf.Tests/Prism.Wpf.Tests.csproj
+        tests/Wpf/Prism.DryIoc.Wpf.Tests/Prism.DryIoc.Wpf.Tests.csproj
+        tests/Wpf/Prism.Unity.Wpf.Tests/Prism.Unity.Wpf.Tests.csproj
       code-sign: false
       artifact-name: Wpf
-      dotnet-version: 10.0.100
+      dotnet-version: |
+        10.0.100
+        11.0.100
     secrets:
+      nugetFeedUrl: ${{ secrets.IN_HOUSE_NUGET_FEED }}
+      nugetUserName: ${{ secrets.IN_HOUSE_USER }}
+      nugetToken: ${{ secrets.IN_HOUSE_API_KEY }}
       codeSignKeyVault: ${{ secrets.CodeSignKeyVault }}
       codeSignClientId: ${{ secrets.CodeSignClientId }}
       codeSignTenantId: ${{ secrets.CodeSignTenantId }}
@@ -55,20 +71,29 @@ jobs:
       codeSignCertificate: ${{ secrets.CodeSignCertificate }}
 
   build-prism-uno:
-    uses: avantipoint/workflow-templates/.github/workflows/msbuild-build.yml@v1
+    uses: avantipoint/workflow-templates/.github/workflows/msbuild-build.yml@61adf86e5d3b2836b2b76fdb67cb71076521a9d7 # v2 with private feed URL secret support
     with:
       name: Build Prism.Uno
+      runs-on: windows-2025-vs2026
+      vs-version: '[18.7,19.0)'
       solution-path: PrismLibrary_Uno.slnf
       windows-sdk-version: 18362
-      dotnet-version: 10.0.100
-      install-workload: ios android macos maccatalyst wasm-tools tvos
+      dotnet-version: |
+        10.0.100
+        11.0.100
+      install-workload: ios android wasm-tools wasm-tools-net10 tvos --version 11.0.100
       uno-check: false
       uno-check-version: 1.33.1
       uno-check-parameters: '--skip xcode --skip gtk3 --skip vswin --skip androidemulator --skip androidsdk --skip vsmac --skip dotnetnewunotemplates'
-      run-tests: false
+      test-projects: |
+        tests/Uno/Prism.Uno.WinUI.Tests/Prism.Uno.WinUI.Tests.csproj
+        tests/Uno/Prism.DryIoc.Uno.WinUI.Tests/Prism.DryIoc.Uno.WinUI.Tests.csproj
       code-sign: false
       artifact-name: Uno
     secrets:
+      nugetFeedUrl: ${{ secrets.IN_HOUSE_NUGET_FEED }}
+      nugetUserName: ${{ secrets.IN_HOUSE_USER }}
+      nugetToken: ${{ secrets.IN_HOUSE_API_KEY }}
       codeSignKeyVault: ${{ secrets.CodeSignKeyVault }}
       codeSignClientId: ${{ secrets.CodeSignClientId }}
       codeSignTenantId: ${{ secrets.CodeSignTenantId }}
@@ -76,15 +101,23 @@ jobs:
       codeSignCertificate: ${{ secrets.CodeSignCertificate }}
 
   build-prism-maui:
-    uses: avantipoint/workflow-templates/.github/workflows/dotnet-build.yml@v1
+    uses: avantipoint/workflow-templates/.github/workflows/dotnet-build.yml@61adf86e5d3b2836b2b76fdb67cb71076521a9d7 # v2 with private feed URL secret support
     with:
       name: Build Prism.Maui
       solution-path: PrismLibrary_Maui.slnf
-      install-workload: maui maui-tizen
+      install-workload: maui maui-tizen --version 11.0.100
+      test-projects: |
+        tests/Maui/Prism.Maui.Tests/Prism.Maui.Tests.csproj
+        tests/Maui/Prism.DryIoc.Maui.Tests/Prism.DryIoc.Maui.Tests.csproj
       code-sign: false
       artifact-name: Maui
-      dotnet-version: 10.0.100
+      dotnet-version: |
+        10.0.100
+        11.0.100
     secrets:
+      nugetFeedUrl: ${{ secrets.IN_HOUSE_NUGET_FEED }}
+      nugetUserName: ${{ secrets.IN_HOUSE_USER }}
+      nugetToken: ${{ secrets.IN_HOUSE_API_KEY }}
       codeSignKeyVault: ${{ secrets.CodeSignKeyVault }}
       codeSignClientId: ${{ secrets.CodeSignClientId }}
       codeSignTenantId: ${{ secrets.CodeSignTenantId }}
@@ -92,14 +125,22 @@ jobs:
       codeSignCertificate: ${{ secrets.CodeSignCertificate }}
 
   build-prism-avalonia:
-    uses: avantipoint/workflow-templates/.github/workflows/dotnet-build.yml@v1
+    uses: avantipoint/workflow-templates/.github/workflows/dotnet-build.yml@61adf86e5d3b2836b2b76fdb67cb71076521a9d7 # v2 with private feed URL secret support
     with:
       name: Build Prism.Avalonia
       solution-path: PrismLibrary_Avalonia.slnf
+      test-projects: |
+        tests/Avalonia/Prism.Avalonia.Tests/Prism.Avalonia.Tests.csproj
+        tests/Avalonia/Prism.DryIoc.Avalonia.Tests/Prism.DryIoc.Avalonia.Tests.csproj
       code-sign: false
       artifact-name: Avalonia
-      dotnet-version: 10.0.100
+      dotnet-version: |
+        10.0.100
+        11.0.100
     secrets:
+      nugetFeedUrl: ${{ secrets.IN_HOUSE_NUGET_FEED }}
+      nugetUserName: ${{ secrets.IN_HOUSE_USER }}
+      nugetToken: ${{ secrets.IN_HOUSE_API_KEY }}
       codeSignKeyVault: ${{ secrets.CodeSignKeyVault }}
       codeSignClientId: ${{ secrets.CodeSignClientId }}
       codeSignTenantId: ${{ secrets.CodeSignTenantId }}
@@ -111,7 +152,7 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
 
       - name: Download Core
         uses: actions/download-artifact@v4
@@ -154,7 +195,7 @@ jobs:
           path: .\artifacts\nuget
 
   deploy-internal:
-    uses: avantipoint/workflow-templates/.github/workflows/deploy-nuget.yml@v1
+    uses: avantipoint/workflow-templates/.github/workflows/deploy-nuget.yml@v2
     needs: generate-consolidated-artifacts
     if: ${{ github.event_name == 'push' }}
     with:
@@ -164,7 +205,7 @@ jobs:
       apiKey: ${{ secrets.IN_HOUSE_API_KEY }}
 
   deploy-commercial-plus:
-    uses: avantipoint/workflow-templates/.github/workflows/deploy-nuget.yml@v1
+    uses: avantipoint/workflow-templates/.github/workflows/deploy-nuget.yml@v2
     needs: generate-consolidated-artifacts
     if: ${{ github.event_name == 'push' }}
     with:

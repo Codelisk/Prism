@@ -86,11 +86,12 @@ public class AsyncDelegateCommand : DelegateCommandBase, IAsyncCommand
     public async Task Execute(CancellationToken? cancellationToken = null)
     {
         var token = cancellationToken ?? _getCancellationToken();
+
+        if (!_enableParallelExecution && IsExecuting)
+            return;
+
         try
         {
-            if (!_enableParallelExecution && IsExecuting)
-                return;
-
             IsExecuting = true;
             await _executeMethod(token)
                 .ConfigureAwait(false);
@@ -166,21 +167,21 @@ public class AsyncDelegateCommand : DelegateCommandBase, IAsyncCommand
     }
 
     /// <summary>
-    /// Sets the <see cref="CancellationTokenSourceFactory(Func{CancellationToken})"/> based on the specified timeout.
+    /// Sets the <see cref="CancellationTokenFactory(Func{CancellationToken})"/> based on the specified timeout.
     /// </summary>
     /// <param name="timeout">A specified timeout.</param>
     /// <returns>The current instance of <see cref="AsyncDelegateCommand{T}"/>.</returns>
     public AsyncDelegateCommand CancelAfter(TimeSpan timeout) =>
-        CancellationTokenSourceFactory(() => new CancellationTokenSource(timeout).Token);
+        CancellationTokenFactory(() => new CancellationTokenSource(timeout).Token);
 
     /// <summary>
     /// Provides a delegate callback to provide a default CancellationToken when the Command is invoked.
     /// </summary>
-    /// <param name="factory">The default <see cref="CancellationToken"/> Factory.</param>
+    /// <param name="cancellationTokenFactory">The default <see cref="CancellationToken"/> Factory.</param>
     /// <returns>The current instance of <see cref="AsyncDelegateCommand"/>.</returns>
-    public AsyncDelegateCommand CancellationTokenSourceFactory(Func<CancellationToken> factory)
+    public AsyncDelegateCommand CancellationTokenFactory(Func<CancellationToken> cancellationTokenFactory)
     {
-        _getCancellationToken = factory;
+        _getCancellationToken = cancellationTokenFactory;
         return this;
     }
 

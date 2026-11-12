@@ -7,11 +7,14 @@ using TabbedPage = Microsoft.Maui.Controls.TabbedPage;
 namespace Prism.Navigation
 {
     /// <summary>
-    /// Represents a window used for Prism navigation in a Maui application.
+    /// Represents a window used for Prism navigation.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     public class PrismWindow : Window
     {
+        private bool _deviceModalPopInProgress;
+        internal Page PendingModalConfirmation { get; set; }
+
         /// <summary>
         /// The default name for the Prism window.
         /// </summary>
@@ -71,20 +74,48 @@ namespace Prism.Navigation
 
         private async void PrismWindow_ModalPopping(object sender, ModalPoppingEventArgs e)
         {
-            if (PageNavigationService.NavigationSource == PageNavigationSource.Device)
+            // A second navigation request can reset the global source while a dialog
+            // close awaits native completion. Only its exact modal/window may bypass
+            // device handling; another popup or window still gets its own veto check.
+            if (DialogServiceBase.IsDialogClosing(e.Modal, this))
+                return;
+
+            if (PageNavigationService.NavigationSource is PageNavigationSource.Device or PageNavigationSource.DialogService)
             {
-                e.Cancel = true;
-                var dialogModal = IDialogContainer.DialogStack.LastOrDefault();
+                if (e.Modal == PendingModalConfirmation)
+                {
+                    e.Cancel = true;
+                    return;
+                }
+
+                var dialogModal = IDialogContainer.DialogStack.LastOrDefault(dialog =>
+                    ReferenceEquals(DialogServiceBase.GetDialogPage(dialog)?.GetParentWindow(), this));
                 if (dialogModal is not null)
                 {
+                    e.Cancel = true;
                     if (dialogModal.Dismiss.CanExecute(null))
                         dialogModal.Dismiss.Execute(null);
                 }
-                else
+                else if ((MvvmHelpers.GetCurrentPage(e.Modal)?.GetContainerProvider() ??
+                    e.Modal.GetContainerProvider()) is { } container)
                 {
-                    var navService = Xaml.Navigation.GetNavigationService(e.Modal);
-                    await navService.GoBackAsync();
+                    e.Cancel = true;
+                    if (_deviceModalPopInProgress)
+                        return;
+
+                    _deviceModalPopInProgress = true;
+                    try
+                    {
+                        await container.Resolve<INavigationService>().GoBackAsync();
+                    }
+                    finally
+                    {
+                        _deviceModalPopInProgress = false;
+                    }
                 }
+
+                // Otherwise the modal was not created by Prism, so there is no navigation service to
+                // go back through. Let MAUI pop it rather than cancel the pop and then throw.
             }
         }
 
@@ -103,7 +134,7 @@ namespace Prism.Navigation
         protected override void OnDeactivated()
         {
             IsActive = false;
-            MvvmHelpers.InvokeViewAndViewModelAction<IActiveAware>(CurrentPage, x => x.IsActive = true);
+            MvvmHelpers.InvokeViewAndViewModelAction<IActiveAware>(CurrentPage, x => x.IsActive = false);
         }
 
         /// <summary>

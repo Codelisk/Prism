@@ -46,7 +46,7 @@ public class NavigationException : Exception
     public const string ErrorCreatingPage = "An error occurred while resolving the page. This is most likely the result of invalid XAML or other type initialization exception";
 
     /// <summary>
-    /// The <see cref="NavigationException"/> Message returned when an unsupported Maui Exception occurred.
+    /// The message returned when the page navigation stack is not supported by the underlying navigation host.
     /// </summary>
     public const string UnsupportedMauiCreation = "An unsupported Maui Exception occurred. This may be due to a bug with MAUI or something that is otherwise not supported by MAUI.";
 
@@ -69,6 +69,16 @@ public class NavigationException : Exception
     /// The <see cref="NavigationException"/> Message returned when an unknown error occurred.
     /// </summary>
     public const string UnknownException = "An unknown error occurred. You may need to specify whether to Use Modal Navigation or not.";
+
+    /// <summary>
+    /// The error returned when a named navigation source is not on the active navigation path.
+    /// </summary>
+    public const string NavigationSourceNotFound = "No source View was found with the provided navigation name on the active navigation path.";
+
+    /// <summary>
+    /// The error returned when an absolute route is used with a named navigation source.
+    /// </summary>
+    public const string UnsupportedAbsoluteUri = "Absolute Uris are not supported when navigating from a named source View. Please use a relative Uri.";
 
     /// <summary>
     /// Initializes a new instance of the <see cref="NavigationException"/>

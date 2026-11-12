@@ -6,8 +6,10 @@ on:
     branches:
       - master
     paths:
-      - .github/workflows/build_forms.yml
+      - .github/workflows/build_wpf.yml
       - Directory.Build.props
+      - src/Directory.Build.props
+      - src/Directory.Build.targets
       - Directory.Build.targets
       - Directory.Packages.props
       - xunit.runner.json
@@ -19,8 +21,19 @@ on:
 
 jobs:
   build-prism-wpf:
-    uses: avantipoint/workflow-templates/.github/workflows/dotnet-build.yml@v1
+    uses: avantipoint/workflow-templates/.github/workflows/dotnet-build.yml@61adf86e5d3b2836b2b76fdb67cb71076521a9d7 # v2 with private feed URL secret support
     with:
       name: Build Prism.Wpf
       solution-path: PrismLibrary_Wpf.slnf
-      dotnet-version: 10.0.100
+      test-projects: |
+        tests/Wpf/Prism.Wpf.Tests/Prism.Wpf.Tests.csproj
+        tests/Wpf/Prism.Wpf.Modularity.Tests/Prism.Wpf.Modularity.Tests.csproj
+        tests/Wpf/Prism.DryIoc.Wpf.Tests/Prism.DryIoc.Wpf.Tests.csproj
+        tests/Wpf/Prism.Unity.Wpf.Tests/Prism.Unity.Wpf.Tests.csproj
+      dotnet-version: |
+        10.0.100
+        11.0.100
+    secrets:
+      nugetFeedUrl: ${{ secrets.IN_HOUSE_NUGET_FEED }}
+      nugetUserName: ${{ secrets.IN_HOUSE_USER }}
+      nugetToken: ${{ secrets.IN_HOUSE_API_KEY }}

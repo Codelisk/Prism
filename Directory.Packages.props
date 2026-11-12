@@ -1,4 +1,7 @@
 <Project>
+  <PropertyGroup>
+    <PrismNativeAotContainerVersion Condition="'$(PrismNativeAotContainerVersion)' == ''">10.0.94-pre</PrismNativeAotContainerVersion>
+  </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="DryIoc.dll" Version="6.0.0-preview-09" />
     <PackageVersion Include="PolySharp" Version="1.16.0" />
@@ -17,8 +20,8 @@
     <PackageVersion Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" Condition="!$(MSBuildProjectName.StartsWith('Prism.'))" />
   </ItemGroup>
   <!-- Uno
-    Note that the $(UnoVersion) comes from the Uno.Sdk. You should not update it manually. To update the version of Uno,
-    you should instead update the Sdk version in the global.json file.
+    Uno.Sdk supplies compatible versions for Uno and its companion packages.
+    Update the SDK in global.json rather than pinning its managed packages here.
 
     See https://aka.platform.uno/upgrade-uno-packages for more information.
   -->
@@ -73,10 +76,12 @@
   <!-- Tests -->
   <ItemGroup>
     <PackageVersion Include="coverlet.collector" Version="6.0.2" />
+    <PackageVersion Include="coverlet.msbuild" Version="6.0.2" />
     <PackageVersion Include="GitHubActionsTestLogger" Version="2.4.1" />
     <PackageVersion Include="Xamarin.Forms.Mocks" Version="4.7.0.1" />
     <PackageVersion Include="Humanizer.Core" Version="2.14.1" />
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.14.0" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
     <PackageVersion Include="Moq" Version="4.20.70" />
     <PackageVersion Include="xunit" Version="2.9.0" />
@@ -95,7 +100,7 @@
     <PackageVersion Include="Xamarin.UITest" Version="3.0.12" />
   </ItemGroup>
   <ItemGroup>
-    <!-- Global Packages -->
+    <!-- GlobalPackageReference in Directory.Build.props — build-only; not transitive to package consumers -->
     <PackageVersion Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" />
     <PackageVersion Include="Nerdbank.GitVersioning" Version="3.10.94" />
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />

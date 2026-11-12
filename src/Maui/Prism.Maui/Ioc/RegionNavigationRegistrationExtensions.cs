@@ -8,10 +8,58 @@ using Prism.Navigation.Regions.Navigation;
 namespace Prism.Ioc;
 
 /// <summary>
-/// Provides common extensions for Service Registrations for Prism.Maui
+/// Registers views and view models for region navigation.
 /// </summary>
 public static class RegionNavigationRegistrationExtensions
 {
+    /// <summary>
+    /// Registers a ContentPage that hosts a region without requiring a custom page.
+    /// </summary>
+    /// <param name="containerRegistry">The container registry.</param>
+    /// <param name="name">The unique page navigation name.</param>
+    /// <param name="regionName">The name of the region hosted by the page.</param>
+    /// <returns>The container registry.</returns>
+    /// <remarks>Region names must be unique within their region manager while the pages are alive.</remarks>
+    public static IContainerRegistry RegisterRegionPage(this IContainerRegistry containerRegistry, string name, string regionName)
+    {
+        ArgumentNullException.ThrowIfNull(containerRegistry);
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+        ArgumentException.ThrowIfNullOrWhiteSpace(regionName);
+
+        containerRegistry.RegisterForNavigation<RegionPage, RegionPageViewModel>(name)
+            .RegisterPageBehaviorFactory(page =>
+            {
+                if (page is RegionPage && ViewModelLocator.GetNavigationName(page) == name)
+                    Navigation.Regions.Xaml.RegionManager.SetRegionName(page, regionName);
+            });
+
+        return containerRegistry;
+    }
+
+    /// <summary>
+    /// Registers a ContentPage that hosts a region without requiring a custom page.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <param name="name">The unique page navigation name.</param>
+    /// <param name="regionName">The name of the region hosted by the page.</param>
+    /// <returns>The service collection.</returns>
+    /// <remarks>Region names must be unique within their region manager while the pages are alive.</remarks>
+    public static IServiceCollection RegisterRegionPage(this IServiceCollection services, string name, string regionName)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+        ArgumentException.ThrowIfNullOrWhiteSpace(regionName);
+
+        services.RegisterForNavigation<RegionPage, RegionPageViewModel>(name)
+            .RegisterPageBehaviorFactory(page =>
+            {
+                if (page is RegionPage && ViewModelLocator.GetNavigationName(page) == name)
+                    Navigation.Regions.Xaml.RegionManager.SetRegionName(page, regionName);
+            });
+
+        return services;
+    }
+
     /// <summary>
     /// Registers a <see cref="View"/> for region navigation.
     /// </summary>
@@ -29,15 +77,21 @@ public static class RegionNavigationRegistrationExtensions
     /// <typeparam name="TViewModel">The ViewModel to use as the BindingContext for the View</typeparam>
     /// <param name="name">The unique name to register with the View</param>
     /// <param name="containerRegistry"></param>
-    public static IContainerRegistry RegisterForRegionNavigation<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors)] TView, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors)] TViewModel>(this IContainerRegistry containerRegistry, string name = null)
+    public static IContainerRegistry RegisterForRegionNavigation<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors)] TView, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicProperties)] TViewModel>(this IContainerRegistry containerRegistry, string name = null)
         where TView : View
         where TViewModel : class =>
         containerRegistry.RegisterForNavigationWithViewModel(typeof(TView), typeof(TViewModel), name);
 
-    public static IContainerRegistry RegisterForRegionNavigation(this IContainerRegistry containerRegistry, Type viewType, Type viewModelType, string name = null)
+    /// <summary>Registers a view and optional view model for named region navigation.</summary>
+    /// <param name="containerRegistry">The container registry to update.</param>
+    /// <param name="viewType">The view type to register.</param>
+    /// <param name="viewModelType">The associated view model type, or null to use view model location conventions.</param>
+    /// <param name="name">The navigation name; null or whitespace uses the view type name.</param>
+    /// <returns>The same registration collection for additional registrations.</returns>
+    public static IContainerRegistry RegisterForRegionNavigation(this IContainerRegistry containerRegistry, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors)] Type viewType, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicProperties)] Type viewModelType, string name = null)
         => containerRegistry.RegisterForNavigationWithViewModel(viewType, viewModelType, name);
 
-    private static IContainerRegistry RegisterForNavigationWithViewModel(this IContainerRegistry containerRegistry, Type viewType, Type viewModelType, string name)
+    private static IContainerRegistry RegisterForNavigationWithViewModel(this IContainerRegistry containerRegistry, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors)] Type viewType, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicProperties)] Type viewModelType, string name)
     {
         if (string.IsNullOrWhiteSpace(name))
             name = viewType.Name;
@@ -74,15 +128,21 @@ public static class RegionNavigationRegistrationExtensions
     /// <typeparam name="TViewModel">The ViewModel to use as the BindingContext for the View</typeparam>
     /// <param name="name">The unique name to register with the View</param>
     /// <param name="services"></param>
-    public static IServiceCollection RegisterForRegionNavigation<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors)] TView, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors)] TViewModel>(this IServiceCollection services, string name = null)
+    public static IServiceCollection RegisterForRegionNavigation<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors)] TView, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicProperties)] TViewModel>(this IServiceCollection services, string name = null)
         where TView : View
         where TViewModel : class =>
         services.RegisterForNavigationWithViewModel(typeof(TView), typeof(TViewModel), name);
 
-    public static IServiceCollection RegisterForRegionNavigation(this IServiceCollection services, Type viewType, Type viewModelType, string name = null)
+    /// <summary>Registers a view and optional view model for named region navigation.</summary>
+    /// <param name="services">The service collection to update.</param>
+    /// <param name="viewType">The view type to register.</param>
+    /// <param name="viewModelType">The associated view model type, or null to use view model location conventions.</param>
+    /// <param name="name">The navigation name; null or whitespace uses the view type name.</param>
+    /// <returns>The same registration collection for additional registrations.</returns>
+    public static IServiceCollection RegisterForRegionNavigation(this IServiceCollection services, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors)] Type viewType, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicProperties)] Type viewModelType, string name = null)
         => services.RegisterForNavigationWithViewModel(viewType, viewModelType, name);
 
-    private static IServiceCollection RegisterForNavigationWithViewModel(this IServiceCollection services, Type viewType, Type viewModelType, string name)
+    private static IServiceCollection RegisterForNavigationWithViewModel(this IServiceCollection services, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors)] Type viewType, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicProperties)] Type viewModelType, string name)
     {
         if (string.IsNullOrWhiteSpace(name))
             name = viewType.Name;
@@ -118,6 +178,7 @@ public static class RegionNavigationRegistrationExtensions
             regionAdapterMappings.RegisterDefaultMapping<Layout, LayoutRegionAdapter>();
             regionAdapterMappings.RegisterDefaultMapping<ScrollView, ScrollViewRegionAdapter>();
             regionAdapterMappings.RegisterDefaultMapping<ContentView, ContentViewRegionAdapter>();
+            regionAdapterMappings.RegisterDefaultMapping<ContentPage, ContentPageRegionAdapter>();
             return regionAdapterMappings;
         });
 

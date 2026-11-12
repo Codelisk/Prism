@@ -6,6 +6,8 @@
   <PropertyGroup>
     <NeutralLanguage>en</NeutralLanguage>
     <Authors>Brian Lagunas;Dan Siegel</Authors>
+    <Company>Prism Software, LLC</Company>
+    <Copyright Condition="'$(Copyright)'==''">Copyright (C) 2015-$([System.DateTime]::Now.ToString(`yyyy`)) Prism Software, LLC - all rights reserved</Copyright>
     <PackageProjectUrl>https://github.com/PrismLibrary/Prism</PackageProjectUrl>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageIcon>prism-logo.png</PackageIcon>
@@ -22,6 +24,8 @@
     <PolySharpIncludeGeneratedTypes>
       System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembersAttribute;
       System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes;
+      System.Diagnostics.CodeAnalysis.FeatureSwitchDefinitionAttribute;
+      System.Diagnostics.CodeAnalysis.MaybeNullAttribute;
       System.Diagnostics.CodeAnalysis.MaybeNullWhenAttribute;
       System.Runtime.CompilerServices.IsExternalInit;
     </PolySharpIncludeGeneratedTypes>
@@ -152,26 +156,19 @@
           CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
-  <ItemGroup Condition=" $(UseMaui) != 'true' ">
-    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
-
-  <ItemGroup Condition=" $(DISABLE_GITVERSIONING) != 'true' ">
+  <!-- Versions: Directory.Packages.props (Central Package Management). PrivateAssets=all is implicit. -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies"
+                      Condition=" $(UseMaui) != 'true' " />
     <PackageReference Include="Nerdbank.GitVersioning"
-                      Condition=" !$(MSBuildProjectDirectory.Contains('e2e')) ">
+                      Condition=" $(DISABLE_GITVERSIONING) != 'true' AND !$(MSBuildProjectDirectory.Contains('e2e')) " />
+    <PackageReference Include="Microsoft.SourceLink.GitHub"
+                      Condition=" $(IsPackable) ">
       <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-  </ItemGroup>
-
-  <ItemGroup Condition=" $(IsPackable) ">
-    <PackageReference Include="Microsoft.SourceLink.GitHub">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
+    <PackageReference Include="Microsoft.Sbom.Targets"
+                      Condition=" $(IsPackable) " />
   </ItemGroup>
 
 </Project>

@@ -5,6 +5,9 @@
   </PropertyGroup>
 
   <PropertyGroup Condition=" $(IsPackable) ">
+    <GenerateSBOM>true</GenerateSBOM>
+    <SbomGenerationFetchLicenseInformation>true</SbomGenerationFetchLicenseInformation>
+    <SbomGenerationPackageSupplier>$(Company)</SbomGenerationPackageSupplier>
     <!-- Nuget source link -->
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -12,4 +15,11 @@
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
   </PropertyGroup>
 
+  <Target Name="SetSbomMetadata"
+          BeforeTargets="GenerateSbomTarget"
+          AfterTargets="GetBuildVersion">
+    <PropertyGroup>
+      <SbomGenerationPackageVersion>$(PackageVersion)</SbomGenerationPackageVersion>
+    </PropertyGroup>
+  </Target>
 </Project>

@@ -1,0 +1,45 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net10.0;net11.0</TargetFrameworks>
+    <MauiXamlInflator>SourceGen</MauiXamlInflator>
+    <WarningsAsErrors>$(WarningsAsErrors);XC0103</WarningsAsErrors>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(PrismMauiGlobalXmlns)' != 'false' ">
+    <DefineConstants>$(DefineConstants);PRISM_MAUI_GLOBAL_XMLNS</DefineConstants>
+  </PropertyGroup>
+
+  <!-- Canonical XAML tests also compile and run when global mappings are disabled. -->
+  <ItemGroup Condition=" '$(PrismMauiGlobalXmlns)' == 'false' ">
+    <MauiXaml Remove="Mocks\Views\GlobalNamespacePage.xaml" />
+    <Compile Remove="Mocks\Views\GlobalNamespacePage.xaml.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Maui.Controls" />
+    <PackageReference Include="GitHubActionsTestLogger">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="Moq" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="coverlet.collector">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\Maui\Prism.Maui\Prism.Maui.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\Prism.Core.Tests\Lifetime\CollectionProbe.cs" Link="Lifetime\CollectionProbe.cs" />
+  </ItemGroup>
+</Project>

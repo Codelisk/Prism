@@ -13,18 +13,21 @@ public interface IDialogContainer
     /// </summary>
     /// <remarks>
     /// This property provides access to the list of dialogs currently displayed, typically in the order they were presented.
+    /// Built-in <see cref="DialogContainerPage"/> adds and removes itself when the modal is pushed and popped; custom
+    /// <see cref="IDialogContainer"/> implementations (for example Mopups or Community Toolkit popups) should keep this list
+    /// aligned with when their overlay is actually shown or dismissed.
     /// </remarks>
     static IList<IDialogContainer> DialogStack { get; } = [];
 
     /// <summary>
     /// Gets the view associated with the currently displayed dialog.
     /// </summary>
-    View DialogView { get; }
+    View? DialogView { get; }
 
     /// <summary>
     /// Gets a command that can be used to dismiss the currently displayed dialog.
     /// </summary>
-    ICommand Dismiss { get; }
+    ICommand? Dismiss { get; }
 
     /// <summary>
     /// Configures the layout and behavior of the dialog.

@@ -3,7 +3,8 @@
 
   <PropertyGroup>
     <IsPackable>false</IsPackable>
-    <ContinuousIntegrationBuild Condition="'$(BUILD_BUILDID)' != ''">true</ContinuousIntegrationBuild>
+    <!-- GitHub Actions sets GITHUB_ACTIONS and CI; other CI hosts often set CI. -->
+    <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true' Or '$(CI)' == 'true'">true</ContinuousIntegrationBuild>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
   <PropertyGroup>
@@ -23,9 +24,8 @@
   </Choose>
 
   <PropertyGroup Condition=" $(IsUnoProject) ">
-    <UnoTargetFrameworks>net9.0;net9.0-android;net9.0-ios;net9.0-tvos;net9.0-desktop;net9.0-browserwasm</UnoTargetFrameworks>
-    <UnoTargetFrameworks>$(UnoTargetFrameworks);net11.0;net11.0-android;net11.0-ios;net11.0-tvos;net11.0-desktop;net11.0-browserwasm</UnoTargetFrameworks>
-    <UnoTargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(UnoTargetFrameworks);net9.0-windows10.0.19041;net11.0-windows10.0.19041</UnoTargetFrameworks>
+    <UnoTargetFrameworks>net10.0;net10.0-android;net10.0-ios;net10.0-tvos26.0;net10.0-desktop;net10.0-browserwasm</UnoTargetFrameworks>
+    <UnoTargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(UnoTargetFrameworks);net10.0-windows10.0.19041</UnoTargetFrameworks>
     <RuntimeIdentifiers Condition="$(TargetFramework.Contains('windows10'))">win-x64;win-x86;win-arm64</RuntimeIdentifiers>
   </PropertyGroup>
 

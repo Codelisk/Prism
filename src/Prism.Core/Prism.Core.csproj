@@ -11,6 +11,10 @@
     <PackageTags>prism;wpf;xamarin;dotnet maui;maui;uno;unoplatform;mvvm;xaml</PackageTags>
   </PropertyGroup>
 
+  <ItemGroup Condition=" !$(TargetFramework.StartsWith('net4')) ">
+    <Compile Remove="**\*.Desktop.cs" />
+  </ItemGroup>
+
   <ItemGroup>
     <Using Include="Prism" />
     <Using Include="Prism.Commands" />

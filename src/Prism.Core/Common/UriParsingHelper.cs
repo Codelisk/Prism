@@ -71,7 +71,7 @@ namespace Prism.Common
 
             if (parameters is not null)
             {
-                foreach (KeyValuePair<string, object> navigationParameter in parameters)
+                foreach (var navigationParameter in parameters)
                 {
                     navParameters.Add(navigationParameter.Key, navigationParameter.Value);
                 }
@@ -113,7 +113,7 @@ namespace Prism.Common
 
             if (parameters != null)
             {
-                foreach (KeyValuePair<string, object> navigationParameter in parameters)
+                foreach (var navigationParameter in parameters)
                 {
                     dialogParameters.Add(navigationParameter.Key, navigationParameter.Value);
                 }

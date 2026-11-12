@@ -83,6 +83,11 @@ public static class INavigationServiceExtensions
     /// <param name="navigationService">Service for handling navigation between views</param>
     /// <param name="name">The name of the target to navigate to.</param>
     /// <param name="parameters">The navigation parameters</param>
+    /// <remarks>
+    /// Leading <c>../</c> segments remove pages from the current navigation or modal stack.
+    /// Removing a modal NavigationPage's root also dismisses its container. Any following
+    /// pages are pushed relative to the remaining page, using its navigation context.
+    /// </remarks>
     public static Task<INavigationResult> NavigateAsync(this INavigationService navigationService, string name, INavigationParameters parameters)
     {
         if (name.StartsWith(PageNavigationService.RemovePageRelativePath))
@@ -106,6 +111,37 @@ public static class INavigationServiceExtensions
     {
         return navigationService.NavigateAsync(name, GetNavigationParameters(parameters));
     }
+
+    /// <summary>
+    /// Navigates along a relative route from the nearest view registered as <paramref name="viewName"/>.
+    /// </summary>
+    /// <param name="navigationService">Service for handling navigation between views.</param>
+    /// <param name="viewName">The navigation registration name of the source view to retain.</param>
+    /// <param name="uri">The relative route to navigate from the source view.</param>
+    /// <returns>The result of the navigation request.</returns>
+    public static Task<INavigationResult> NavigateFromAsync(this INavigationService navigationService, string viewName, Uri uri) =>
+        navigationService.NavigateFromAsync(viewName, uri, null);
+
+    /// <summary>
+    /// Navigates along a relative route from the nearest view registered as <paramref name="viewName"/>.
+    /// </summary>
+    /// <param name="navigationService">Service for handling navigation between views.</param>
+    /// <param name="viewName">The navigation registration name of the source view to retain.</param>
+    /// <param name="route">The relative route to navigate from the source view.</param>
+    /// <returns>The result of the navigation request.</returns>
+    public static Task<INavigationResult> NavigateFromAsync(this INavigationService navigationService, string viewName, string route) =>
+        navigationService.NavigateFromAsync(viewName, route, null);
+
+    /// <summary>
+    /// Navigates along a relative route from the nearest view registered as <paramref name="viewName"/>.
+    /// </summary>
+    /// <param name="navigationService">Service for handling navigation between views.</param>
+    /// <param name="viewName">The navigation registration name of the source view to retain.</param>
+    /// <param name="route">The relative route to navigate from the source view.</param>
+    /// <param name="parameters">The navigation parameters.</param>
+    /// <returns>The result of the navigation request.</returns>
+    public static Task<INavigationResult> NavigateFromAsync(this INavigationService navigationService, string viewName, string route, INavigationParameters parameters) =>
+        navigationService.NavigateFromAsync(viewName, route is null ? null : UriParsingHelper.Parse(route), parameters);
 
     /// <summary>
     /// Provides an easy to use way to provide an Error Callback without using await NavigationService

@@ -56,7 +56,7 @@ These are the base packages for each platform, together with the Prism's Core as
 | Cross Platform | [Prism.Container.Unity][ContainerUnityNuGet] | [![ContainerUnityNuGetShield]][ContainerUnityNuGet] | [![ContainerUnityPrismNuGetShield]][CorePrismNuGet] |
 | WPF | [Prism.Wpf][WpfNuGet] | [![WpfNuGetShield]][WpfNuGet] | [![WpfPrismNuGetShield]][WpfPrismNuGet] |
 | Avalonia | [Prism.Avalonia][AvaloniaNuGet] | [![AvaloniaNuGetShield]][AvaloniaNuGet] | [![AvaloniaPrismNuGetShield]][AvaloniaPrismNuGet] |
-| Xamarin.Forms | [Prism.Forms][FormsNuGet] | [![FormsNuGetShield]][FormsNuGet] | [![FormsPrismNuGetShield]][FormsPrismNuGet] |
+| .NET MAUI | [Prism.Maui][MauiNuGet] | [![MauiNuGetShield]][MauiNuGet] | [![MauiPrismNuGetShield]][MauiPrismNuGet] |
 | Uno Platform and WinUI | [Prism.Uno][UnoNuGet] | [![UnoNuGetShield]][UnoNuGet] | [![UnoPrismNuGetShield]][UnoPrismNuGet] |
 
 ### Container-specific packages
@@ -76,15 +76,21 @@ Each supported IoC container has its own package assisting in the setup and usag
 |---------|-------|-------|
 | [Prism.DryIoc.Avalonia][DryIocAvaloniaNuGet] | [![DryIocAvaloniaNuGetShield]][DryIocAvaloniaNuGet] | [![DryIocAvaloniaPrismNuGetShield]][DryIocAvaloniaPrismNuGet] |
 
-#### Xamarin Forms
+#### .NET MAUI
 
 | Package | NuGet | Commercial Plus Feed |
 |---------|-------|-------|
-| [Prism.DryIoc.Forms][DryIocFormsNuGet] | [![DryIocFormsNuGetShield]][DryIocFormsNuGet] | [![DryIocFormsPrismNuGetShield]][DryIocFormsPrismNuGet] |
-| [Prism.Unity.Forms][UnityFormsNuGet] | [![UnityFormsNuGetShield]][UnityFormsNuGet] | [![UnityFormsPrismNuGetShield]][UnityFormsPrismNuGet] |
-| [Prism.Forms.Regions][PrismFormsRegionsNuget] | [![PrismFormsRegionsNuGetShield]][PrismFormsRegionsNuGet] | [![PrismFormsRegionsPrismNuGetShield]][PrismFormsRegionsPrismNuGet] |
+| [Prism.Maui][MauiNuGet] | [![MauiNuGetShield]][MauiNuGet] | [![MauiPrismNuGetShield]][MauiPrismNuGet] |
+| [Prism.DryIoc.Maui][DryIocMauiNuGet] | [![DryIocMauiNuGetShield]][DryIocMauiNuGet] | [![DryIocMauiPrismNuGetShield]][DryIocMauiPrismNuGet] |
+| [Prism.Maui.Rx][MauiRxNuGet] | [![MauiRxNuGetShield]][MauiRxNuGet] | [![MauiRxPrismNuGetShield]][MauiRxPrismNuGet] |
 
 #### Uno Platform
+
+This release targets stable Uno 7 with `Uno.Sdk` pinned to `7.0.5` and .NET 10.
+This is a specific exception to our N-1 support policy: Uno 7 ships
+alongside this Prism release, and its removal of the native rendering backend
+changes how Prism.Plugins must be packaged. The general N-1 policy is unchanged.
+Uno companion packages must match the versions in the pinned SDK's package manifest.
 
 | Package | NuGet | Commercial Plus Feed |
 |---------|-------|-------|
@@ -99,9 +105,8 @@ A detailed overview of each assembly per package is available [here](http://pris
 For stable samples be sure to check out the samples repo for the platform you are most interested in.
 
 - [Prism for WPF Samples](https://github.com/PrismLibrary/Prism-Samples-Wpf)
-- [Prism for Xamarim.Forms](https://github.com/PrismLibrary/Prism-Samples-Forms)
+- [Prism for .NET MAUI](https://github.com/PrismLibrary/Prism-Samples-Maui)
 - [Prism for Uno Platform](#) (Coming soon)
-- [Prism for .NET MAUI](#) (Coming soon)
 - [Prism for Avalonia](https://github.com/AvaloniaCommunity/Prism.Avalonia/tree/develop/e2e)
 
 ## Contributing
@@ -118,12 +123,9 @@ We strongly encourage you to get involved and help us evolve the code base.
 [WpfNuGet]: https://www.nuget.org/packages/Prism.Wpf/
 [UnoNuGet]: https://www.nuget.org/packages/Prism.Uno.WinUI/
 [AvaloniaNuGet]: https://www.nuget.org/packages/Prism.Avalonia/
-[FormsNuget]: https://www.nuget.org/packages/Prism.Forms/
-
-[PrismFormsRegionsNuGet]: https://www.nuget.org/packages/Prism.Forms.Regions/
-[PrismFormsRegionsPrismNuGet]: #
-[PrismFormsRegionsNuGetShield]: https://img.shields.io/nuget/vpre/Prism.Forms.Regions.svg
-[PrismFormsRegionsPrismNuGetShield]: https://nuget.prismlibrary.com/shield/Prism.Forms.Regions/vpre
+[MauiNuGet]: https://www.nuget.org/packages/Prism.Maui/
+[DryIocMauiNuGet]: https://www.nuget.org/packages/Prism.DryIoc.Maui/
+[MauiRxNuGet]: https://www.nuget.org/packages/Prism.Maui.Rx/
 
 [DryIocWpfNuGet]: https://www.nuget.org/packages/Prism.DryIoc/
 [UnityWpfNuGet]: https://www.nuget.org/packages/Prism.Unity/
@@ -137,7 +139,9 @@ We strongly encourage you to get involved and help us evolve the code base.
 [ContainerDryIocNuGetShield]: https://img.shields.io/nuget/vpre/Prism.Container.DryIoc.svg
 [ContainerUnityNuGetShield]: https://img.shields.io/nuget/vpre/Prism.Container.Unity.svg
 [WpfNuGetShield]: https://img.shields.io/nuget/vpre/Prism.Wpf.svg
-[FormsNuGetShield]: https://img.shields.io/nuget/vpre/Prism.Forms.svg
+[MauiNuGetShield]: https://img.shields.io/nuget/vpre/Prism.Maui.svg
+[DryIocMauiNuGetShield]: https://img.shields.io/nuget/vpre/Prism.DryIoc.Maui.svg
+[MauiRxNuGetShield]: https://img.shields.io/nuget/vpre/Prism.Maui.Rx.svg
 [UnoNuGetShield]: https://img.shields.io/nuget/vpre/Prism.Uno.WinUI.svg
 
 [DryIocWpfNuGetShield]: https://img.shields.io/nuget/vpre/Prism.DryIoc.svg
@@ -146,22 +150,19 @@ We strongly encourage you to get involved and help us evolve the code base.
 [AvaloniaNuGetShield]: https://img.shields.io/nuget/vpre/Prism.Avalonia.svg
 [DryIocAvaloniaNuGetShield]: https://img.shields.io/nuget/vpre/Prism.DryIoc.Avalonia.svg
 
-[DryIocFormsNuGetShield]: https://img.shields.io/nuget/vpre/Prism.DryIoc.Forms.svg
-[UnityFormsNuGetShield]: https://img.shields.io/nuget/vpre/Prism.Unity.Forms.svg
-
 [DryIocUnoPlatformNuGetShield]: https://img.shields.io/nuget/vpre/Prism.DryIoc.Uno.WinUI.svg
 
 [CorePrismNuGet]: #
 [WpfPrismNuGet]: #
-[FormsPrismNuGet]: #
+[MauiPrismNuGet]: #
 [UnoPrismNuGet]: #
 [AvaloniaPrismNuGet]: #
 
 [DryIocWpfPrismNuGet]: #
 [UnityWpfPrismNuGet]: #
 
-[UnityFormsPrismNuGet]: #
-[DryIocFormsPrismNuGet]: #
+[DryIocMauiPrismNuGet]: #
+[MauiRxPrismNuGet]: #
 
 [DryIocAvaloniaPrismNuGet]: #
 
@@ -175,7 +176,9 @@ We strongly encourage you to get involved and help us evolve the code base.
 [WpfPrismNuGetShield]: https://nuget.prismlibrary.com/shield/Prism.Wpf/vpre
 [AvaloniaPrismNuGetShield]: https://nuget.prismlibrary.com/shield/Prism.Avalonia/vpre
 [UnoPrismNuGetShield]: https://nuget.prismlibrary.com/shield/Prism.Uno.WinUI/vpre
-[FormsPrismNuGetShield]: https://nuget.prismlibrary.com/shield/Prism.Forms/vpre
+[MauiPrismNuGetShield]: https://nuget.prismlibrary.com/shield/Prism.Maui/vpre
+[DryIocMauiPrismNuGetShield]: https://nuget.prismlibrary.com/shield/Prism.DryIoc.Maui/vpre
+[MauiRxPrismNuGetShield]: https://nuget.prismlibrary.com/shield/Prism.Maui.Rx/vpre
 
 [DryIocWpfPrismNuGetShield]: https://nuget.prismlibrary.com/shield/Prism.DryIoc/vpre
 [UnityWpfPrismNuGetShield]: https://nuget.prismlibrary.com/shield/Prism.Unity/vpre

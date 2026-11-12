@@ -1,5 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using System.Globalization;
+﻿using System.Globalization;
 using Prism.Behaviors;
 using Prism.Extensions;
 using Prism.Navigation.Regions.Adapters;
@@ -14,16 +13,12 @@ namespace Prism.Navigation.Regions.Behaviors;
 /// the region. After the region is created, this behavior will detach.
 /// </summary>
 /// <remarks>
-/// Attached property value inheritance is not available in Silverlight, so the current approach walks up the visual tree when requesting a region from a region manager.
+/// Region registration locates the applicable region manager by walking the visual tree.
 /// The <see cref="RegionManagerRegistrationBehavior"/> is now responsible for walking up the Tree.
 /// </remarks>
 public class DelayedRegionCreationBehavior
 {
-    private static readonly ICollection<DelayedRegionCreationBehavior> _instanceTracker =
-        new Collection<DelayedRegionCreationBehavior>();
-
     private readonly RegionAdapterMappings _regionAdapterMappings;
-    private readonly object _trackerLock = new object();
 
     private WeakReference _elementWeakReference;
     private bool _regionCreated = false;
@@ -58,7 +53,7 @@ public class DelayedRegionCreationBehavior
         set => _elementWeakReference = new WeakReference(value);
     }
 
-    private Page ParentPage => TargetElement.GetParentPage();
+    private Page ParentPage => TargetElement as Page ?? TargetElement?.GetParentPage();
 
     /// <summary>
     /// Start monitoring the <see cref="RegionManager"/> and the <see cref="TargetElement"/> to detect when the <see cref="TargetElement"/> becomes
@@ -67,7 +62,7 @@ public class DelayedRegionCreationBehavior
     public void Attach()
     {
         RegionManagerAccessor.UpdatingRegions += OnUpdatingRegions;
-        TargetElement.Behaviors.Add(new ElementParentedCallbackBehavior(TryCreateRegion));
+        TargetElement.Behaviors.Add(new ElementParentedCallbackBehavior(TryCreateRegion, includeSelf: true));
     }
 
     /// <summary>
@@ -76,7 +71,6 @@ public class DelayedRegionCreationBehavior
     public void Detach()
     {
         RegionManagerAccessor.UpdatingRegions -= OnUpdatingRegions;
-        Untrack();
     }
 
     /// <summary>
@@ -97,7 +91,7 @@ public class DelayedRegionCreationBehavior
             return;
         }
 
-        if (TargetElement.TryGetParentPage(out var _))
+        if (ParentPage?.GetContainerProvider() is not null)
         {
             Detach();
 
@@ -105,7 +99,6 @@ public class DelayedRegionCreationBehavior
             {
                 string regionName = RegionManagerAccessor.GetRegionName(TargetElement);
                 CreateRegion(TargetElement, regionName);
-                Track();
                 _regionCreated = true;
             }
         }
@@ -124,12 +117,16 @@ public class DelayedRegionCreationBehavior
 
         try
         {
-            if (!targetElement.TryGetParentPage(out var page))
+            var page = targetElement as Page ?? targetElement.GetParentPage();
+            if (page is null)
                 throw new Exception("The Target Element has not yet been parented and we cannot get the parent page.");
 
             // Build the region
             var container = page.GetContainerProvider();
-            targetElement.SetContainerProvider(container);
+            // Page hosts already resolve their scope, including a flyout menu's
+            // inherited scope, which must remain owned by the FlyoutPage.
+            if (targetElement is not Page)
+                targetElement.SetContainerProvider(container);
             var regionAdapter = _regionAdapterMappings.GetMapping(targetElement.GetType());
             var region = regionAdapter.Initialize(targetElement, regionName);
 
@@ -138,32 +135,6 @@ public class DelayedRegionCreationBehavior
         catch (Exception ex)
         {
             throw new RegionCreationException(string.Format(CultureInfo.CurrentCulture, Resources.RegionCreationException, regionName, ex), ex);
-        }
-    }
-
-    /// <summary>
-    /// Add the instance of this class to <see cref="_instanceTracker"/> to keep it alive
-    /// </summary>
-    private void Track()
-    {
-        lock (_trackerLock)
-        {
-            if (!_instanceTracker.Contains(this))
-            {
-                _instanceTracker.Add(this);
-            }
-        }
-    }
-
-    /// <summary>
-    /// Remove the instance of this class from <see cref="_instanceTracker"/>
-    /// so it can eventually be garbage collected
-    /// </summary>
-    private void Untrack()
-    {
-        lock (_trackerLock)
-        {
-            _instanceTracker.Remove(this);
         }
     }
 }

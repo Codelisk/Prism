@@ -1,12 +1,14 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.Windows.Input;
 using Microsoft.Maui.Controls.PlatformConfiguration;
 using Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;
+using Microsoft.Maui.Dispatching;
 using Microsoft.Maui.Layouts;
 using Prism.Dialogs.Xaml;
 using Application = Microsoft.Maui.Controls.Application;
 using Page = Microsoft.Maui.Controls.Page;
 
+#nullable enable
 namespace Prism.Dialogs;
 
 /// <summary>
@@ -21,6 +23,12 @@ public class DialogContainerPage : ContentPage, IDialogContainer
     public const string AutomationIdName = "PrismDialogModal";
 
     /// <summary>
+    /// When <see cref="DoPop"/> runs (including re-entrantly while <see cref="DoPush"/> is awaiting),
+    /// we must not add this instance to <see cref="IDialogContainer.DialogStack"/> after the modal was already removed.
+    /// </summary>
+    bool _closedBeforeOrDuringPush;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="DialogContainerPage"/> class.
     /// </summary>
     public DialogContainerPage()
@@ -30,15 +38,34 @@ public class DialogContainerPage : ContentPage, IDialogContainer
         On<iOS>().SetModalPresentationStyle(UIModalPresentationStyle.OverFullScreen);
     }
 
+    static IDispatcher? GetDialogDispatcher(Page currentPage) =>
+        currentPage.Dispatcher ?? Application.Current?.Dispatcher;
+
+    static async Task DispatchModalAsync(Page currentPage, Func<Task> work)
+    {
+        var dispatcher = GetDialogDispatcher(currentPage);
+        // No dispatcher (e.g. some test hosts), or already on the UI thread—including re-entrant DoPop during
+        // PushModalAsync: run inline so we do not nest DispatchAsync and deadlock the dispatcher queue.
+        if (dispatcher is null || !dispatcher.IsDispatchRequired)
+        {
+            await work().ConfigureAwait(true);
+            return;
+        }
+
+        await dispatcher.DispatchAsync(work).ConfigureAwait(false);
+    }
+
     /// <summary>
     /// Gets the dialog view displayed in the container page.
     /// </summary>
-    public View DialogView { get; private set; }
+    /// <remarks>Returns null until <see cref="ConfigureLayout"/> configures the dialog.</remarks>
+    public View? DialogView { get; private set; }
 
     /// <summary>
     /// Gets the command used to dismiss the dialog.
     /// </summary>
-    public ICommand Dismiss { get; private set; }
+    /// <remarks>Returns null until <see cref="ConfigureLayout"/> configures the dialog.</remarks>
+    public ICommand? Dismiss { get; private set; }
 
     /// <summary>
     /// Configures the layout of the dialog container page.
@@ -51,6 +78,7 @@ public class DialogContainerPage : ContentPage, IDialogContainer
     /// <returns>A task representing the asynchronous operation.</returns>
     public async Task ConfigureLayout(Page currentPage, View dialogView, bool hideOnBackgroundTapped, ICommand dismissCommand, IDialogParameters parameters)
     {
+        _closedBeforeOrDuringPush = false;
         Dismiss = dismissCommand;
         DialogView = dialogView;
         Content = GetContentLayout(currentPage, dialogView, hideOnBackgroundTapped, dismissCommand, parameters);
@@ -65,7 +93,14 @@ public class DialogContainerPage : ContentPage, IDialogContainer
     /// <returns>A task representing the asynchronous operation.</returns>
     protected virtual async Task DoPush(Page currentPage)
     {
-        await currentPage.Navigation.PushModalAsync(this, false);
+        await DispatchModalAsync(currentPage, async () =>
+        {
+            await currentPage.Navigation.PushModalAsync(this, false);
+            if (_closedBeforeOrDuringPush)
+                return;
+
+            IDialogContainer.DialogStack.Add(this);
+        });
     }
 
     /// <summary>
@@ -75,7 +110,18 @@ public class DialogContainerPage : ContentPage, IDialogContainer
     /// <returns>A task representing the asynchronous operation.</returns>
     public virtual async Task DoPop(Page currentPage)
     {
-        await currentPage.Navigation.PopModalAsync(false);
+        await DispatchModalAsync(currentPage, async () =>
+        {
+            if (!ReferenceEquals(currentPage.Navigation.ModalStack.LastOrDefault(), this))
+                throw new InvalidOperationException("Another modal covers this dialog.");
+
+            await currentPage.Navigation.PopModalAsync(false);
+            if (currentPage.Navigation.ModalStack.Any(modal => ReferenceEquals(modal, this)))
+                throw new InvalidOperationException("The dialog modal could not be removed.");
+
+            _closedBeforeOrDuringPush = true;
+            IDialogContainer.DialogStack.Remove(this);
+        });
     }
 
     /// <summary>
@@ -89,7 +135,15 @@ public class DialogContainerPage : ContentPage, IDialogContainer
     /// <returns>The content layout for the dialog container page.</returns>
     protected virtual View GetContentLayout(Page currentPage, View dialogView, bool hideOnBackgroundTapped, ICommand dismissCommand, IDialogParameters parameters)
     {
-        var overlay = new AbsoluteLayout();
+        // Use a Grid so the mask fills the page naturally without needing
+        // AbsoluteLayout proportional sizing, which conflicted with the
+        // WidthRequest/HeightRequest bindings and caused tap gestures on
+        // the mask to not fire reliably across MAUI platforms.
+        var overlay = new Grid();
+        // MAUI 10 layouts respect container safe areas by default. The mask must
+        // cover the entire modal; the separate popupArea retains its safe-area behavior.
+        overlay.SafeAreaEdges = Microsoft.Maui.SafeAreaEdges.None;
+
         var popupContainer = new DialogContainerView
         {
             IsPopupContent = true,
@@ -102,7 +156,7 @@ public class DialogContainerPage : ContentPage, IDialogContainer
         if (relativeWidth != null)
         {
             popupContainer.SetBinding(WidthRequestProperty,
-                new Binding(nameof(Width),
+                Binding.Create(static (DialogContainerPage page) => page.Width,
                             BindingMode.OneWay,
                             new RelativeContentSizeConverter { RelativeSize = relativeWidth.Value },
                             source: this));
@@ -112,26 +166,27 @@ public class DialogContainerPage : ContentPage, IDialogContainer
         if (relativeHeight != null)
         {
             popupContainer.SetBinding(HeightRequestProperty,
-                new Binding(nameof(Height),
+                Binding.Create(static (DialogContainerPage page) => page.Height,
                             BindingMode.OneWay,
                             new RelativeContentSizeConverter { RelativeSize = relativeHeight.Value },
                             source: this));
         }
 
-        AbsoluteLayout.SetLayoutFlags(popupContainer, AbsoluteLayoutFlags.PositionProportional);
-        var popupBounds = DialogLayout.GetLayoutBounds(dialogView);
-        AbsoluteLayout.SetLayoutBounds(popupContainer, popupBounds);
-
-        var useMask = DialogLayout.GetUseMask(popupContainer.Content) ?? true;
+        var useMask = DialogLayout.GetUseMask(dialogView) ?? true;
         if (useMask)
         {
             var mask = GetMask(currentPage, dialogView, hideOnBackgroundTapped, dismissCommand);
-            AbsoluteLayout.SetLayoutFlags(mask, AbsoluteLayoutFlags.All);
-            AbsoluteLayout.SetLayoutBounds(mask, new Rect(0, 0, 1, 1));
             overlay.Children.Add(mask);
         }
 
-        overlay.Children.Add(popupContainer);
+        // Keep an AbsoluteLayout for the popup so LayoutBounds positioning still works
+        var popupArea = new AbsoluteLayout();
+        AbsoluteLayout.SetLayoutFlags(popupContainer, AbsoluteLayoutFlags.PositionProportional);
+        var popupBounds = DialogLayout.GetLayoutBounds(dialogView);
+        AbsoluteLayout.SetLayoutBounds(popupContainer, popupBounds);
+        popupArea.Children.Add(popupContainer);
+
+        overlay.Children.Add(popupArea);
         return overlay;
     }
 
@@ -146,7 +201,6 @@ public class DialogContainerPage : ContentPage, IDialogContainer
     private View GetMask(Page currentPage, View dialogView, bool hideOnBackgroundTapped, ICommand dismissCommand)
     {
         View mask = DialogLayout.GetMask(dialogView);
-        var reference = currentPage.GetParentWindow().Page;
         if (mask is null)
         {
             Style overlayStyle = GetOverlayStyle(dialogView, currentPage);
@@ -154,21 +208,11 @@ public class DialogContainerPage : ContentPage, IDialogContainer
             mask = new BoxView
             {
                 Style = overlayStyle,
-                //HeightRequest = reference.Height,
-                //WidthRequest = reference.Width
             };
         }
 
-        mask.SetBinding(WidthRequestProperty, new Binding
-        {
-            Path = nameof(Width),
-            Source = reference
-        });
-        mask.SetBinding(HeightRequestProperty, new Binding
-        {
-            Path = nameof(Height),
-            Source = reference
-        });
+        // No explicit WidthRequest/HeightRequest needed — the Grid parent
+        // sizes the mask to fill the page automatically.
 
         if (hideOnBackgroundTapped)
         {
@@ -203,8 +247,11 @@ public class DialogContainerPage : ContentPage, IDialogContainer
     /// </summary>
     /// <param name="element">The element.</param>
     /// <returns>The style for the specified element.</returns>
-    private static Style GetStyle(Element element)
+    private static Style GetStyle(Element? element)
     {
+        if (element is null)
+            return DefaultStyle();
+
         if (element is Page page && page.Resources.ContainsKey(DialogLayout.PopupOverlayStyle) && page.Resources[DialogLayout.PopupOverlayStyle] is Style pageStyle)
             return pageStyle;
         else if (element is Application app)
