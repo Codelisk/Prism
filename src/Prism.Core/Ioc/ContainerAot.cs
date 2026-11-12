@@ -21,8 +21,9 @@ namespace Prism.Ioc
         private const DynamicallyAccessedMemberTypes Constructors = DynamicallyAccessedMemberTypes.PublicConstructors;
 
         // Nur Typen, die über die annotierten Preserve-Methoden kamen, landen hier; ihre Konstruktoren bleiben erhalten.
-        private static readonly ConcurrentDictionary<Type, Type> s_byServiceType = new();
-        private static readonly ConcurrentDictionary<(string FullName, Assembly Assembly), Type> s_byName = new();
+        // Gespeichert als Preserved: ein Type als Wert eines Wörterbuchs verlöre die Annotation (IL2067 beim Herausgeben).
+        private static readonly ConcurrentDictionary<Type, Preserved> s_byServiceType = new();
+        private static readonly ConcurrentDictionary<(string FullName, Assembly Assembly), Preserved> s_byName = new();
 
         /// <summary>
         /// Preserves <typeparamref name="T"/> so it can be found by its type and by its full name.
@@ -41,7 +42,7 @@ namespace Prism.Ioc
             where TImplementation : TService
         {
             Add(typeof(TImplementation), typeof(TImplementation));
-            s_byServiceType[typeof(TService)] = typeof(TImplementation);
+            s_byServiceType[typeof(TService)] = new Preserved(typeof(TImplementation));
         }
 
         /// <summary>
@@ -56,7 +57,7 @@ namespace Prism.Ioc
         {
             if (serviceType is not null && s_byServiceType.TryGetValue(serviceType, out var found))
             {
-                implementationType = found;
+                implementationType = found.Type;
                 return true;
             }
 
@@ -78,7 +79,7 @@ namespace Prism.Ioc
         {
             if (fullName is not null && assembly is not null && s_byName.TryGetValue((fullName, assembly), out var found))
             {
-                implementationType = found;
+                implementationType = found.Type;
                 return true;
             }
 
@@ -88,9 +89,18 @@ namespace Prism.Ioc
 
         private static void Add(Type serviceType, [DynamicallyAccessedMembers(Constructors)] Type implementationType)
         {
-            s_byServiceType[serviceType] = implementationType;
+            var preserved = new Preserved(implementationType);
+            s_byServiceType[serviceType] = preserved;
             if (implementationType.FullName is { } fullName)
-                s_byName[(fullName, implementationType.Assembly)] = implementationType;
+                s_byName[(fullName, implementationType.Assembly)] = preserved;
+        }
+
+        private readonly struct Preserved
+        {
+            public Preserved([DynamicallyAccessedMembers(Constructors)] Type type) => Type = type;
+
+            [DynamicallyAccessedMembers(Constructors)]
+            public readonly Type Type;
         }
     }
 }

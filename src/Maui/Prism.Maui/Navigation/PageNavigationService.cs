@@ -2012,14 +2012,42 @@ public class PageNavigationService : INavigationService, IRegistryAware
                 Xaml.TabBindingSource.RootPage;
 
                 //set the title because Xamarin doesn't do this for us.
-                if (!navigationPage.IsSet(Page.TitleProperty))
-                    navigationPage.SetBinding(Page.TitleProperty, new Binding($"{source}.Title", BindingMode.OneWay, source: navigationPage));
-                if (!navigationPage.IsSet(Page.IconImageSourceProperty))
-                    navigationPage.SetBinding(Page.IconImageSourceProperty, new Binding($"{source}.IconImageSource", BindingMode.OneWay, source: navigationPage));
+                BindTabTitle(navigationPage, source);
             }
         }
 
         TabbedPageSelectTab(tabbedPage, tabParameters);
+    }
+
+    /// <summary>
+    /// Binds the title and icon of a tab's <see cref="NavigationPage"/> to its root page or its current page, unless they are set.
+    /// </summary>
+    /// <remarks>
+    /// Orderlyze-Fork: typisierte Bindungen statt eines Pfads als Text (<c>"RootPage.Title"</c>), den MAUI per Reflexion aufloest
+    /// (Trimming, Native AOT); der Binding-Generator von MAUI uebersetzt die Lambdas. Mit der Standard-Einrichtung hat die
+    /// NavigationPage hier meist schon einen Titel: <see cref="Behaviors.NavigationPageTabbedParentBehavior"/> uebernimmt ihn
+    /// von der Wurzelseite, sobald sie gesetzt ist.
+    /// </remarks>
+    /// <param name="navigationPage">The NavigationPage hosted as a tab.</param>
+    /// <param name="source">The page whose title and icon the tab shows.</param>
+    internal static void BindTabTitle(NavigationPage navigationPage, Xaml.TabBindingSource source)
+    {
+        var currentPage = source == Xaml.TabBindingSource.CurrentPage;
+        if (!navigationPage.IsSet(Page.TitleProperty))
+        {
+            if (currentPage)
+                navigationPage.SetBinding(Page.TitleProperty, static (NavigationPage page) => page.CurrentPage?.Title, BindingMode.OneWay, source: navigationPage);
+            else
+                navigationPage.SetBinding(Page.TitleProperty, static (NavigationPage page) => page.RootPage?.Title, BindingMode.OneWay, source: navigationPage);
+        }
+
+        if (!navigationPage.IsSet(Page.IconImageSourceProperty))
+        {
+            if (currentPage)
+                navigationPage.SetBinding(Page.IconImageSourceProperty, static (NavigationPage page) => page.CurrentPage?.IconImageSource, BindingMode.OneWay, source: navigationPage);
+            else
+                navigationPage.SetBinding(Page.IconImageSourceProperty, static (NavigationPage page) => page.RootPage?.IconImageSource, BindingMode.OneWay, source: navigationPage);
+        }
     }
 
     private void SelectPageTab(Page page, INavigationParameters parameters)

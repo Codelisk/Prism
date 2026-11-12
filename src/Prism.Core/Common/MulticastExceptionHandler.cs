@@ -2,11 +2,19 @@ namespace Prism.Common;
 
 #nullable enable
 /// <summary>
-/// Provides a wrapper for managing multicast delegates for handling specific errors
+/// Provides a wrapper for managing callbacks for handling specific errors
 /// </summary>
+/// <remarks>
+/// Orderlyze-Fork: Upstream nimmt jeden <see cref="MulticastDelegate"/> und ruft ihn ueber
+/// <c>GetType().GetMethod("Invoke")</c> per Reflexion auf; unter Trimming und Native AOT ist das nicht sicher (IL2075).
+/// Hier legt jede Ueberladung beim Eintragen fest, wie ihr Rueckruf aufgerufen wird. Unterstuetzt sind die Formen, die
+/// Befehle und Dialoge anbieten: ohne Argument, mit der Ausnahme, mit Ausnahme und Parameter, jeweils synchron oder mit
+/// <see cref="Task"/>. Die Formen „Parameter vor Ausnahme“ und „nur Parameter“ der Upstream-Fassung entfallen: Prism selbst
+/// nutzt sie nicht, und als Lambda waeren beide Reihenfolgen mehrdeutig.
+/// </remarks>
 public readonly struct MulticastExceptionHandler
 {
-    private readonly Dictionary<Type, MulticastDelegate> _handlers;
+    private readonly Dictionary<Type, Func<Exception, object?, Task>> _handlers;
 
     /// <summary>
     /// Initializes a new MulticastExceptionHandler
@@ -21,11 +29,86 @@ public readonly struct MulticastExceptionHandler
     /// </summary>
     /// <typeparam name="TException">The <see cref="Exception"/> type.</typeparam>
     /// <param name="callback">The callback to invoke for the given <see cref="Exception"/> type.</param>
-    public void Register<TException>(MulticastDelegate callback)
-        where TException : Exception
-    {
-        _handlers.Add(typeof(TException), callback);
-    }
+    public void Register<TException>(Action callback)
+        where TException : Exception =>
+        Add<TException>(callback, (_, _) =>
+        {
+            callback();
+            return Task.CompletedTask;
+        });
+
+    /// <summary>
+    /// Registers a callback to handle the specified exception
+    /// </summary>
+    /// <typeparam name="TException">The <see cref="Exception"/> type.</typeparam>
+    /// <param name="callback">The callback to invoke with the <see cref="Exception"/>.</param>
+    public void Register<TException>(Action<TException> callback)
+        where TException : Exception =>
+        Add<TException>(callback, (exception, _) =>
+        {
+            callback((TException)exception);
+            return Task.CompletedTask;
+        });
+
+    /// <summary>
+    /// Registers a callback to handle the specified exception
+    /// </summary>
+    /// <typeparam name="TException">The <see cref="Exception"/> type.</typeparam>
+    /// <param name="callback">The callback to invoke with the <see cref="Exception"/> and the parameter passed to <see cref="HandleAsync"/>.</param>
+    public void Register<TException>(Action<TException, object?> callback)
+        where TException : Exception =>
+        Register<TException, object?>(callback);
+
+    /// <summary>
+    /// Registers a callback to handle the specified exception
+    /// </summary>
+    /// <typeparam name="TException">The <see cref="Exception"/> type.</typeparam>
+    /// <typeparam name="TParameter">The type of the parameter passed to <see cref="HandleAsync"/>.</typeparam>
+    /// <param name="callback">The callback to invoke with the <see cref="Exception"/> and the parameter.</param>
+    public void Register<TException, TParameter>(Action<TException, TParameter> callback)
+        where TException : Exception =>
+        Add<TException>(callback, (exception, parameter) =>
+        {
+            callback((TException)exception, Cast<TParameter>(parameter));
+            return Task.CompletedTask;
+        });
+
+    /// <summary>
+    /// Registers an async callback to handle the specified exception
+    /// </summary>
+    /// <typeparam name="TException">The <see cref="Exception"/> type.</typeparam>
+    /// <param name="callback">The callback to invoke for the given <see cref="Exception"/> type.</param>
+    public void Register<TException>(Func<Task> callback)
+        where TException : Exception =>
+        Add<TException>(callback, (_, _) => callback());
+
+    /// <summary>
+    /// Registers an async callback to handle the specified exception
+    /// </summary>
+    /// <typeparam name="TException">The <see cref="Exception"/> type.</typeparam>
+    /// <param name="callback">The callback to invoke with the <see cref="Exception"/>.</param>
+    public void Register<TException>(Func<TException, Task> callback)
+        where TException : Exception =>
+        Add<TException>(callback, (exception, _) => callback((TException)exception));
+
+    /// <summary>
+    /// Registers an async callback to handle the specified exception
+    /// </summary>
+    /// <typeparam name="TException">The <see cref="Exception"/> type.</typeparam>
+    /// <param name="callback">The callback to invoke with the <see cref="Exception"/> and the parameter passed to <see cref="HandleAsync"/>.</param>
+    public void Register<TException>(Func<TException, object?, Task> callback)
+        where TException : Exception =>
+        Register<TException, object?>(callback);
+
+    /// <summary>
+    /// Registers an async callback to handle the specified exception
+    /// </summary>
+    /// <typeparam name="TException">The <see cref="Exception"/> type.</typeparam>
+    /// <typeparam name="TParameter">The type of the parameter passed to <see cref="HandleAsync"/>.</typeparam>
+    /// <param name="callback">The callback to invoke with the <see cref="Exception"/> and the parameter.</param>
+    public void Register<TException, TParameter>(Func<TException, TParameter, Task> callback)
+        where TException : Exception =>
+        Add<TException>(callback, (exception, parameter) => callback((TException)exception, Cast<TParameter>(parameter)));
 
     /// <summary>
     /// Determines if there is a callback registered to handle the specified exception
@@ -33,10 +116,10 @@ public readonly struct MulticastExceptionHandler
     /// <param name="exception">An <see cref="Exception"/> to handle or rethrow</param>
     /// <returns><c>True</c> if a Callback has been registered for the given type of <see cref="Exception"/>.</returns>
     public bool CanHandle(Exception exception) =>
-        GetDelegate(exception.GetType()) is not null;
+        GetHandler(exception.GetType()) is not null;
 
     /// <summary>
-    /// Handles a specified 
+    /// Handles a specified
     /// </summary>
     /// <param name="exception"></param>
     /// <param name="parameter"></param>
@@ -49,49 +132,35 @@ public readonly struct MulticastExceptionHandler
     /// <param name="exception">The <see cref="Exception"/> encountered.</param>
     /// <param name="parameter">An optional parameter which may be passed to a registered callback delegate.</param>
     /// <returns>An asynchronus Task.</returns>
-    /// <exception cref="InvalidOperationException"></exception>
     public async Task HandleAsync(Exception exception, object? parameter = null)
     {
-        var multicastDelegate = GetDelegate(exception.GetType());
+        var handler = GetHandler(exception.GetType());
 
-        if (multicastDelegate is null)
+        if (handler is null)
             return;
 
-        // Get Invoke() method of the delegate
-        var invokeMethod = multicastDelegate.GetType().GetMethod("Invoke")
-            ?? throw new InvalidOperationException($"Could not find Invoke() method for delegate of type {multicastDelegate.GetType().Name}");
-
-        var parameters = invokeMethod.GetParameters();
-        var arguments = parameters.Length switch
-        {
-            0 => Array.Empty<object?>(),
-            1 => typeof(Exception).IsAssignableFrom(parameters[0].ParameterType) ? [exception] : [parameter],
-            2 => typeof(Exception).IsAssignableFrom(parameters[0].ParameterType) ? [exception, parameter] : [parameter, exception],
-            _ => throw new InvalidOperationException($"Handler of type {multicastDelegate.GetType().Name} is not supported", exception)
-        };
-
-        // Invoke the delegate
-        var result = invokeMethod.Invoke(multicastDelegate, arguments);
-
-        // If the handler is async (returns a Task), then we await the task
-        if (result is Task task)
-        {
-            await task;
-        }
-#if NET6_0_OR_GREATER
-        else if (result is ValueTask valueTask)
-        {
-            await valueTask;
-        }
-#endif
+        await handler(exception, parameter);
     }
 
-    private MulticastDelegate? GetDelegate(Type type)
+    private void Add<TException>(Delegate callback, Func<Exception, object?, Task> handler)
+        where TException : Exception
     {
-        if (_handlers.ContainsKey(type))
-            return _handlers[type];
-        else if (type.BaseType is not null)
-            return GetDelegate(type.BaseType);
+        ArgumentNullException.ThrowIfNull(callback);
+        _handlers.Add(typeof(TException), handler);
+    }
+
+    // Wie zuvor MethodInfo.Invoke: null wird zum Standardwert des Parametertyps, ein anderer Typ ist ein Fehler.
+    private static TParameter Cast<TParameter>(object? parameter) =>
+        parameter is null ? default! : (TParameter)parameter;
+
+    // Der Rueckruf fuer den Typ selbst, sonst fuer den naechsten Basistyp.
+    private Func<Exception, object?, Task>? GetHandler(Type type)
+    {
+        for (Type? current = type; current is not null; current = current.BaseType)
+        {
+            if (_handlers.TryGetValue(current, out var handler))
+                return handler;
+        }
 
         return null;
     }

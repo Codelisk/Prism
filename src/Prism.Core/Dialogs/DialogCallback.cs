@@ -155,7 +155,7 @@ public readonly struct DialogCallback
     public DialogCallback OnError<TException>(Action<TException, IDialogResult> action)
         where TException : Exception
     {
-        _errorCallbacks.Register<TException>(action);
+        _errorCallbacks.Register<TException, IDialogResult>(action);
         return this;
     }
 
@@ -235,7 +235,7 @@ public readonly struct DialogCallback
     public DialogCallback OnErrorAsync<TException>(Func<TException, IDialogResult, Task> func)
         where TException : Exception
     {
-        _errorCallbacks.Register<TException>(func);
+        _errorCallbacks.Register<TException, IDialogResult>(func);
         return this;
     }
 }
