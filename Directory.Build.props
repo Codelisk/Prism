@@ -156,12 +156,16 @@
           CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
-  <!-- Versions: Directory.Packages.props (Central Package Management). PrivateAssets=all is implicit. -->
+  <!-- Versions: Directory.Packages.props (Central Package Management). -->
+  <!-- Orderlyze-Fork: PrivateAssets ausdrücklich. Upstream verlässt sich darauf, dass es implizit
+       gilt; ohne kamen beide Pakete über Prism.Core/Events in den Paketgraph der Kasse. -->
   <ItemGroup>
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies"
-                      Condition=" $(UseMaui) != 'true' " />
+                      Condition=" $(UseMaui) != 'true' "
+                      PrivateAssets="all" />
     <PackageReference Include="Nerdbank.GitVersioning"
-                      Condition=" $(DISABLE_GITVERSIONING) != 'true' AND !$(MSBuildProjectDirectory.Contains('e2e')) " />
+                      Condition=" $(DISABLE_GITVERSIONING) != 'true' AND !$(MSBuildProjectDirectory.Contains('e2e')) "
+                      PrivateAssets="all" />
     <PackageReference Include="Microsoft.SourceLink.GitHub"
                       Condition=" $(IsPackable) ">
       <PrivateAssets>all</PrivateAssets>
