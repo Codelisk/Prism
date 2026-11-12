@@ -73,9 +73,9 @@ public class AutoPopulateRegionBehavior : RegionBehavior, IHostAwareRegionBehavi
             Region.PropertyChanged -= Region_PropertyChanged;
         }
 
-        if (regionViewRegistry != null)
+        if (_regionViewRegistry != null)
         {
-            regionViewRegistry.ContentRegistered -= OnViewRegistered;
+            _regionViewRegistry.ContentRegistered -= OnViewRegistered;
         }
 
         base.OnDetach();

@@ -1,5 +1,6 @@
 #nullable enable
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Prism.Common
 {

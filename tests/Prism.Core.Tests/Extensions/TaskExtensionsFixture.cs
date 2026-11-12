@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Prism.Extensions;
 using Xunit;
 
 namespace Prism.Core.Tests.Extensions

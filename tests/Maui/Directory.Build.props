@@ -6,4 +6,10 @@
     <IsPackable>false</IsPackable>
     <UseMaui>True</UseMaui>
   </PropertyGroup>
+
+  <!-- Orderlyze-Fork: Namespaces wie im Ordner (Original: Prism.Navigation), Navigations-Builder und Rx-Beobachter. -->
+  <ItemGroup>
+    <Using Include="Prism.Navigation.Builder" />
+    <Using Include="Prism.Maui.Rx" />
+  </ItemGroup>
 </Project>
