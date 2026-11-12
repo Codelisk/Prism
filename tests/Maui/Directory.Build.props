@@ -7,9 +7,8 @@
     <UseMaui>True</UseMaui>
   </PropertyGroup>
 
-  <!-- Orderlyze-Fork: Namespaces wie im Ordner (Original: Prism.Navigation), Navigations-Builder und Rx-Beobachter. -->
+  <!-- Orderlyze-Fork: Namespaces wie im Ordner (Original: Prism.Navigation), Navigations-Builder. -->
   <ItemGroup>
     <Using Include="Prism.Navigation.Builder" />
-    <Using Include="Prism.Maui.Rx" />
   </ItemGroup>
 </Project>

@@ -41,4 +41,8 @@
     <ProjectReference Include="..\..\..\src\Maui\Prism.Maui\Prism.Maui.csproj" />
   </ItemGroup>
 
+  <!-- Orderlyze-Fork: Rx-Beobachter liegen im Namensraum Prism.Maui.Rx (Original: Prism.Navigation). -->
+  <ItemGroup>
+    <Using Include="Prism.Maui.Rx" />
+  </ItemGroup>
 </Project>
