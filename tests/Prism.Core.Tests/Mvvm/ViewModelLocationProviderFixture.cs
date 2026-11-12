@@ -177,12 +177,23 @@ namespace Prism.Tests.Mvvm
             Assert.IsType<MockViewModel>(actual);
         }
 
-        // Orderlyze-Fork: ohne Prism.Container 10 entfällt der Test zum vorgemerkten ViewModel (AOT-Metadaten).
+        [Fact]
+        public void PreservedViewModelResolvesByConventionWithoutTypeMapping()
+        {
+            ResetViewModelLocationProvider();
+            ContainerAot.Preserve<MockViewModel>();
+            object actual = null;
+
+            ViewModelLocationProvider.AutoWireViewModelChanged(new Mock(), (_, vm) => actual = vm);
+
+            Assert.IsType<MockViewModel>(actual);
+        }
 
         [Fact]
         public void CustomFactoryWithViewTakesPrecedenceForPreservedViewModels()
         {
             ResetViewModelLocationProvider();
+            ContainerAot.Preserve<MockViewModel>();
             var view = new Mock();
             var expected = new object();
             ViewModelLocationProvider.SetDefaultViewModelFactory(type => throw new InvalidOperationException("The view-aware factory should take precedence."));

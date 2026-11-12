@@ -66,8 +66,8 @@ namespace Prism.Mvvm
             if (_registeredViewModelTypes.TryGetValue(type, out var registration))
                 return Activator.CreateInstance(registration.Type)!;
 
-            // Orderlyze-Fork: ContainerAot gibt es erst ab Prism.Container 10, der nur im privaten Feed des Prism-Teams liegt.
-            // Die Kasse nutzt Prism ohne Native AOT; ViewModels findet weiter die Reflection unten.
+            if (ContainerAot.TryGetImplementationType(type, out var preservedType))
+                return Activator.CreateInstance(preservedType)!;
 
             if (IsReflectionBasedViewModelLocationEnabled)
                 return CreateViewModelUsingReflection(type);
@@ -88,8 +88,8 @@ namespace Prism.Mvvm
             var suffix = viewName != null && viewName.EndsWith("View") ? "Model" : "ViewModel";
             var viewModelFullName = string.Concat(viewName, suffix);
 
-            // Orderlyze-Fork: ContainerAot gibt es erst ab Prism.Container 10, der nur im privaten Feed des Prism-Teams liegt.
-            // Die Kasse nutzt Prism ohne Native AOT; ViewModels findet weiter die Reflection unten.
+            if (ContainerAot.TryGetImplementationType(viewModelFullName, viewAssembly, out var preservedType))
+                return preservedType;
 
             return IsReflectionBasedViewModelLocationEnabled ? FindViewModelUsingReflection(viewModelFullName, viewAssembly) : null;
         }
