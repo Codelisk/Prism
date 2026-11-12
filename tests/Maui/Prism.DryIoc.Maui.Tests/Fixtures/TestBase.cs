@@ -27,6 +27,8 @@ public abstract class TestBase
             {
                 prism.RegisterTypes(container =>
                 {
+                    // Orderlyze-Fork: ausdrücklich registriert, die Suite läuft auch gegen den Container ohne Auto-Erzeugung.
+                    container.Register<NavigationTestRecorder>();
                     container.RegisterScoped<INavigationService, TestPageNavigationService>();
                     container.RegisterForNavigation<MockHome, MockHomeViewModel>()
                         .RegisterForNavigation<MockExplicitTabbedPage>()

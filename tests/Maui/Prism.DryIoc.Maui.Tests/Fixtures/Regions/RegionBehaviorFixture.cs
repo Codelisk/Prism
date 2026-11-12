@@ -13,6 +13,7 @@ public class RegionBehaviorFixture : TestBase
     public void ExistingBehavior_IsReplaced_WithCustomBehavior()
     {
         var mauiApp = CreateBuilder(prism => prism
+            .RegisterTypes(container => container.Register<RegionBehaviorBMock>())
             .ConfigureRegionBehaviors(behaviors =>
             {
                 behaviors.AddOrReplace<RegionBehaviorBMock>(RegionBehaviorAMock.BehaviorKey);
@@ -31,6 +32,7 @@ public class RegionBehaviorFixture : TestBase
     public void MissingBehavior_IsAdded()
     {
         var mauiApp = CreateBuilder(prism => prism
+            .RegisterTypes(container => container.Register<RegionBehaviorAMock>())
             .ConfigureRegionBehaviors(behaviors =>
             {
                 behaviors.AddOrReplace<RegionBehaviorAMock>(RegionBehaviorAMock.BehaviorKey);

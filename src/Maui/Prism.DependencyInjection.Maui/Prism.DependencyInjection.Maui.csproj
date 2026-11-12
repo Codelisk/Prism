@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Orderlyze-Fork: Prism-Container auf Microsoft.Extensions.DependencyInjection statt DryIoc (Native AOT, Trimming). -->
+  <PropertyGroup>
+    <TargetFramework>$(NetVersion)</TargetFramework>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <UseMaui>true</UseMaui>
+    <ImplicitUsings>true</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsAotCompatible>true</IsAotCompatible>
+    <Description>Prism.DependencyInjection.Maui implements Prism's IContainerExtension on Microsoft.Extensions.DependencyInjection, the container .NET MAUI itself uses. It compiles no code at runtime and is safe for trimming and Native AOT.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Maui.Controls" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Prism.Maui\Prism.Maui.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Prism.DependencyInjection.Maui.Tests" />
+  </ItemGroup>
+
+</Project>

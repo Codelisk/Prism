@@ -23,6 +23,7 @@ Prism for .NET MAUI helps you more easily design and build rich, flexible, and e
   <ItemGroup>
     <InternalsVisibleTo Include="Prism.Maui.Tests" />
     <InternalsVisibleTo Include="Prism.DryIoc.Maui.Tests" />
+    <InternalsVisibleTo Include="Prism.DependencyInjection.Maui.Tests" />
     <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>

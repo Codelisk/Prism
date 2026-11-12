@@ -1,5 +1,6 @@
 ﻿using Prism.Behaviors;
 using Prism.Common;
+using Prism.Controls;
 using Prism.Mvvm;
 using Prism.Navigation.Xaml;
 using TabbedPage = Microsoft.Maui.Controls.TabbedPage;
@@ -9,8 +10,37 @@ namespace Prism.Navigation;
 internal class NavigationRegistry : ViewRegistryBase, INavigationRegistry
 {
     public NavigationRegistry(IEnumerable<ViewRegistration> registrations)
-        : base(ViewType.Page, registrations)
+        : base(ViewType.Page, WithDefaultPages(registrations))
     {
+    }
+
+    // Orderlyze-Fork: "NavigationPage" und "TabbedPage" stehen hier statt als Registrierung nach dem Aufbau des Containers,
+    // wie zuvor nur ohne eigene Registrierung der App und als letzte (AddTabbedSegment und AddNavigationPage nehmen die
+    // letzte passende).
+    private static List<ViewRegistration> WithDefaultPages(IEnumerable<ViewRegistration> registrations)
+    {
+        var all = registrations.ToList();
+        if (!all.Exists(x => x.Type == ViewType.Page && x.Name == nameof(NavigationPage)))
+        {
+            all.Add(new ViewRegistration
+            {
+                Name = nameof(NavigationPage),
+                View = typeof(PrismNavigationPage),
+                Type = ViewType.Page
+            });
+        }
+
+        if (!all.Exists(x => x.Type == ViewType.Page && x.Name == nameof(TabbedPage)))
+        {
+            all.Add(new ViewRegistration
+            {
+                Name = nameof(TabbedPage),
+                View = typeof(TabbedPage),
+                Type = ViewType.Page
+            });
+        }
+
+        return all;
     }
 
     protected override void ConfigureView(BindableObject bindable, IContainerProvider container)

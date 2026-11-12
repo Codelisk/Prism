@@ -261,26 +261,6 @@ public sealed class PrismAppBuilder
         {
             throw new AggregateException("One or more errors were encountered while executing the OnInitialized Delegates", [.. errors]);
         }
-
-        var navRegistry = _container.Resolve<INavigationRegistry>();
-        if (!navRegistry.IsRegistered(nameof(NavigationPage)))
-        {
-            var registry = _container as IContainerRegistry;
-            registry
-                .Register<PrismNavigationPage>(() => new PrismNavigationPage())
-                .RegisterInstance(new ViewRegistration
-                {
-                    Name = nameof(NavigationPage),
-                    View = typeof(PrismNavigationPage),
-                    Type = ViewType.Page
-                });
-        }
-
-        if (!navRegistry.IsRegistered(nameof(TabbedPage)))
-        {
-            var registry = _container as IContainerRegistry;
-            registry.RegisterForNavigation<TabbedPage>();
-        }
     }
 
     internal void OnCreateWindow()
@@ -328,6 +308,13 @@ public sealed class PrismAppBuilder
         RegisterDefaultRequiredTypes(container);
 
         _registrations.ForEach(action => action(container));
+
+        // Orderlyze-Fork: die Seiten hinter den Vorgaben "NavigationPage" und "TabbedPage" wie bisher nach den Registrierungen
+        // der App, aber vor dem Aufbau des Containers statt danach – ein Container wie Microsoft.Extensions.DependencyInjection
+        // nimmt dann nichts mehr an. Die Namen ergänzt NavigationRegistry, wenn die App sie nicht selbst vergibt.
+        container
+            .Register<PrismNavigationPage>(() => new PrismNavigationPage())
+            .Register<TabbedPage>();
     }
 
     /// <summary>

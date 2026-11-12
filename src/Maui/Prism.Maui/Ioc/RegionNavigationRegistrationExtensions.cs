@@ -203,6 +203,28 @@ public static class RegionNavigationRegistrationExtensions
         containerRegistry.TryRegister<IRegionNavigationJournalEntry, RegionNavigationJournalEntry>();
         containerRegistry.TryRegister<IRegionNavigationJournal, RegionNavigationJournal>();
         containerRegistry.TryRegister<IRegionNavigationService, RegionNavigationService>();
+
+        // Orderlyze-Fork: was die Regionen selbst auflösen, ist registriert; ein Container, der unregistrierte Typen nicht
+        // erzeugt (Microsoft.Extensions.DependencyInjection), fände es sonst nicht. Eigene Adapter (RegisterMapping) und
+        // Verhalten (AddIfMissing, AddOrReplace) registriert die App selbst.
+        containerRegistry
+            .Register<Prism.Navigation.Regions.Region>()
+            .Register<SingleActiveRegion>()
+            .Register<DelayedRegionCreationBehavior>()
+            .Register<CarouselViewRegionAdapter>()
+            .Register<LayoutViewRegionAdapter>()
+            .Register<LayoutRegionAdapter>()
+            .Register<ScrollViewRegionAdapter>()
+            .Register<ContentViewRegionAdapter>()
+            .Register<ContentPageRegionAdapter>()
+            .Register<BindRegionContextToVisualElementBehavior>()
+            .Register<RegionActiveAwareBehavior>()
+            .Register<SyncRegionContextWithHostBehavior>()
+            .Register<RegionManagerRegistrationBehavior>()
+            .Register<RegionMemberLifetimeBehavior>()
+            .Register<ClearChildViewsRegionBehavior>()
+            .Register<AutoPopulateRegionBehavior>()
+            .Register<DestructibleRegionBehavior>();
         //containerRegistry.RegisterManySingleton<RegionResolverOverrides>(typeof(IResolverOverridesHelper), typeof(IActiveRegionHelper));
         return containerRegistry.TryRegisterSingleton<IRegionManager, RegionManager>();
     }

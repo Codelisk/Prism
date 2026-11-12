@@ -1,0 +1,48 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Orderlyze-Fork: die MAUI-Suite aus Prism.DryIoc.Maui.Tests läuft hier gegen MicrosoftContainerExtension.
+    Ausgenommen sind nur die Tests, die DryIoc selbst prüfen (PrismAppBuilderCompositionTests) oder sein Erzeugen
+    unregistrierter Typen voraussetzen (ContainerProviderTests); ihr Gegenstück liegt unter Fixtures/.
+  -->
+  <PropertyGroup>
+    <TargetFramework>net11.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <SharedTests>..\Prism.DryIoc.Maui.Tests\</SharedTests>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="$(SharedTests)**\*.cs"
+             Exclude="$(SharedTests)bin\**;$(SharedTests)obj\**;$(SharedTests)Windows\**;$(SharedTests)Fixtures\PrismAppBuilderCompositionTests.cs;$(SharedTests)Fixtures\IoC\ContainerProviderTests.cs"
+             LinkBase="Shared" />
+    <MauiXaml Include="$(SharedTests)Mocks\**\*.xaml" LinkBase="Shared\Mocks" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Maui.Controls" />
+    <PackageReference Include="GitHubActionsTestLogger">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\Maui\Prism.DependencyInjection.Maui\Prism.DependencyInjection.Maui.csproj" />
+    <ProjectReference Include="..\..\..\src\Maui\Prism.Maui.Rx\Prism.Maui.Rx.csproj" />
+    <ProjectReference Include="..\..\..\src\Maui\Prism.Maui\Prism.Maui.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Prism.Maui.Rx" />
+    <Using Include="Prism.DependencyInjection" />
+    <Using Include="Prism.DependencyInjection.Maui" />
+  </ItemGroup>
+</Project>

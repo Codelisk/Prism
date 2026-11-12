@@ -164,7 +164,9 @@ public class ContentPageRegionFixture : TestBase
     {
         var mauiApp = CreateBuilder(prism => prism
             .ConfigureRegionAdapters(mappings => mappings.RegisterMapping<ContentPage, CustomContentPageRegionAdapter>())
-            .RegisterTypes(container => container.RegisterRegionPage("RegionPage", "MainRegion"))
+            .RegisterTypes(container => container
+                .Register<CustomContentPageRegionAdapter>()
+                .RegisterRegionPage("RegionPage", "MainRegion"))
             .CreateWindow("RegionPage"))
             .Build();
         var window = GetWindow(mauiApp);

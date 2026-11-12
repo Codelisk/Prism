@@ -51,7 +51,7 @@ public class NavigationTests : TestBase
     public async Task ViewModelLocator_Forced_SetsContainer_ResolvedViewModel()
     {
         var mauiApp = CreateBuilder(prism => prism
-            .RegisterTypes(c => c.RegisterForNavigation<ForcedView>())
+            .RegisterTypes(c => c.RegisterForNavigation<ForcedView>().Register<ForcedViewModel>())
             .CreateWindow("ForcedView"))
             .Build();
         var window = GetWindow(mauiApp);
