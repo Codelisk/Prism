@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Prism.Modularity
 {
@@ -25,6 +26,11 @@ namespace Prism.Modularity
         /// <summary>
         /// The module's type
         /// </summary>
+        /// <remarks>
+        /// The assembly-qualified name of a module type whose constructors are kept; the module initializer loads it by
+        /// this name and lets the container create it.
+        /// </remarks>
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors)]
         string ModuleType { get; set; }
 
         /// <summary>

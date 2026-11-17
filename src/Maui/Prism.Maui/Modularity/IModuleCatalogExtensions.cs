@@ -87,10 +87,6 @@ public static class IModuleCatalogExtensions
     public static IModuleCatalog AddModule<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors)] T>(this IModuleCatalog catalog, string name, InitializationMode mode, params string[] dependsOn)
         where T : IModule
     {
-        var moduleInfo = new ModuleInfo(name, typeof(T).AssemblyQualifiedName, dependsOn)
-        {
-            InitializationMode = mode
-        };
-        return catalog.AddModule(moduleInfo);
+        return catalog.AddModule(new ModuleInfo(typeof(T), name, mode, dependsOn));
     }
 }

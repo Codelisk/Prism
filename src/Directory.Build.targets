@@ -43,6 +43,9 @@
     </ItemGroup>
   </Target>
 
+  <!-- Orderlyze-Fork: in AOT-tauglichen Projekten sind Trim-/AOT-/Single-File-Befunde Fehler. -->
+  <Import Project="$(MSBuildThisFileDirectory)AotCompatible.targets" Condition=" '$(IsAotCompatible)' == 'true' " />
+
   <Import Project="$(MSBuildThisFileDirectory)winappsdk-workaround.targets"
           Condition=" '$(IsUnoProject)' " />
 </Project>

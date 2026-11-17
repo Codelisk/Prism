@@ -10,6 +10,9 @@ Prism for .NET MAUI helps you more easily design and build rich, flexible, and e
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <UseMaui>true</UseMaui>
     <ImplicitUsings>true</ImplicitUsings>
+    <!-- Orderlyze-Fork: AOT-tauglich; Trim-/AOT-Befunde sind Fehler (src/AotCompatible.targets). Nicht trimmbar markiert, damit TrimMode=partial (iOS) die Assembly nicht trimmt. -->
+    <IsAotCompatible>true</IsAotCompatible>
+    <IsTrimmable>false</IsTrimmable>
   </PropertyGroup>
 
   <ItemGroup>

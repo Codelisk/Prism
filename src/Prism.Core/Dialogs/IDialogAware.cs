@@ -1,8 +1,15 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace Prism.Dialogs;
 
 /// <summary>
 /// Provides a way for objects involved in Dialogs to be notified of Dialog activities.
 /// </summary>
+/// <remarks>
+/// The dialog service sets <see cref="RequestClose"/> by reflection (<see cref="DialogUtilities"/>): the annotation keeps
+/// that property and the fields it may be stored in on every dialog view model, also in a trimmed app.
+/// </remarks>
+[DynamicallyAccessedMembers(DialogUtilities.ListenerMembers)]
 public interface IDialogAware
 {
     /// <summary>

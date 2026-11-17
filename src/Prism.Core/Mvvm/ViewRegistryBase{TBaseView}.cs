@@ -79,7 +79,9 @@ public abstract class ViewRegistryBase<TBaseView> : IViewRegistry
         }
     }
 
-    private IEnumerable<Type> GetCandidates(Type viewModelType)
+    // Full names of the views the conventions allow for the view model, in its assembly. Compared with the registered views
+    // instead of loading the types by name (Type.GetType), which a trimmed app cannot guarantee.
+    private IEnumerable<string> GetCandidateNames(Type viewModelType)
     {
         var names = new List<string>
         {
@@ -121,15 +123,8 @@ public abstract class ViewRegistryBase<TBaseView> : IViewRegistry
                 ]
             };
 
-            var candidates = namespaces.Select(@namespace => names.Select(name => $"{@namespace}.{name}"))
-                .SelectMany(x => x)
-                .Select(x =>
-                    viewModelType.AssemblyQualifiedName?.Replace(viewModelType.FullName ?? string.Empty, x) ??
-                    string.Empty);
-
-            return candidates
-                .Select(x => Type.GetType(x, false))
-                .OfType<Type>();
+            return namespaces.Select(@namespace => names.Select(name => $"{@namespace}.{name}"))
+                .SelectMany(x => x);
         }
 
         return [];
@@ -147,8 +142,8 @@ public abstract class ViewRegistryBase<TBaseView> : IViewRegistry
         if (registration is not null)
             return registration.Name;
 
-        var candidates = GetCandidates(viewModelType);
-        registration = Registrations.LastOrDefault(x => candidates.Any(c => c == x.View));
+        var candidates = GetCandidateNames(viewModelType);
+        registration = Registrations.LastOrDefault(x => x.View.Assembly == viewModelType.Assembly && x.View.FullName is { } fullName && candidates.Contains(fullName));
         if (registration is not null)
         {
             return registration.Name;

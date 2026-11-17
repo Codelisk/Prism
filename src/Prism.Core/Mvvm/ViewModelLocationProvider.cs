@@ -57,9 +57,14 @@ namespace Prism.Mvvm
         /// </summary>
         static Func<Type, Type?> _defaultViewTypeToViewModelTypeResolver = DefaultViewTypeToViewModel;
 
+        // FeatureGuard: in a trimmed app the switch counts as off, and the reflection paths behind it are removed. IL4000: the
+        // analyzer cannot prove that from the body; the trimmer substitutes the guard itself (same pattern as the runtime libraries).
+#pragma warning disable IL4000
         [FeatureSwitchDefinition("Prism.Mvvm.ReflectionBasedViewModelLocationEnabled")]
+        [FeatureGuard(typeof(RequiresUnreferencedCodeAttribute))]
         private static bool IsReflectionBasedViewModelLocationEnabled =>
             !AppContext.TryGetSwitch("Prism.Mvvm.ReflectionBasedViewModelLocationEnabled", out var enabled) || enabled;
+#pragma warning restore IL4000
 
         private static object CreateViewModel(Type type)
         {

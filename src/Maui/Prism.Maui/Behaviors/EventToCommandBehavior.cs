@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -29,6 +30,7 @@ namespace Prism.Behaviors;
 /// &lt;/ListView&gt;
 /// </example>
 // This is a modified version of https://anthonysimmon.com/eventtocommand-in-xamarin-forms-apps/
+[RequiresUnreferencedCode("Finds the event by its name and walks EventArgsParameterPath by reflection; both may be trimmed away. Bind the command in code instead.")]
 public class EventToCommandBehavior : BehaviorBase<BindableObject>
 {
     /// <summary>

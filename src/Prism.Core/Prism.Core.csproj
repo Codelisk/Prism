@@ -9,6 +9,9 @@
     <!--<Summary>Prism provides an implementation of a collection of design patterns that are helpful in writing well structured and maintainable applications.</Summary>-->
     <Description> Prism provides an implementation of a collection of design patterns that are helpful in writing well structured and maintainable XAML applications, including MVVM, dependency injection, commanding, event aggregation, and more. Prism's core functionality is a shared code base in a class library that does not target any specific Application Framework. Features that need to be platform specific are implemented in the respective libraries for the target platform.</Description>
     <PackageTags>prism;wpf;xamarin;dotnet maui;maui;uno;unoplatform;mvvm;xaml</PackageTags>
+    <!-- Orderlyze-Fork: AOT-tauglich; Trim-/AOT-Befunde sind Fehler (src/AotCompatible.targets). Nicht trimmbar markiert, damit TrimMode=partial (iOS) die Assembly nicht trimmt. -->
+    <IsAotCompatible>true</IsAotCompatible>
+    <IsTrimmable>false</IsTrimmable>
   </PropertyGroup>
 
   <ItemGroup Condition=" !$(TargetFramework.StartsWith('net4')) ">

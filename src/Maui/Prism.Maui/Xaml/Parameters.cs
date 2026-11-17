@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Prism.Xaml;
 
@@ -137,7 +138,7 @@ public class Parameters : BindableObject, IList<Parameter>
     /// <typeparam name="T">The parameter container type, which must have a public parameterless constructor.</typeparam>
     /// <param name="parent">The parent used for binding context propagation if a parent has not already been assigned.</param>
     /// <returns>A new container holding the current parameter keys and values.</returns>
-    public T ToParameters<T>(BindableObject parent)
+    public T ToParameters<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] T>(BindableObject parent)
         where T : Common.ParametersBase
     {
         Parent = Parent ?? parent;

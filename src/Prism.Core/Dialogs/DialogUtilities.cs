@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 namespace Prism.Dialogs;
@@ -9,6 +10,13 @@ namespace Prism.Dialogs;
 [EditorBrowsable(EditorBrowsableState.Never)]
 public static class DialogUtilities
 {
+    /// <summary>
+    /// Members <see cref="InitializeListener(IDialogAware, Action{IDialogResult})"/> reads on a dialog view model: the
+    /// <see cref="IDialogAware.RequestClose"/> property and the fields of the type and all its base types (a private backing field
+    /// of a base type is found only on that type, which is why it is <see cref="DynamicallyAccessedMemberTypes.All"/>).
+    /// </summary>
+    internal const DynamicallyAccessedMemberTypes ListenerMembers = DynamicallyAccessedMemberTypes.All;
+
     /// <summary>
     /// Initializes <see cref="IDialogAware.RequestClose"/>
     /// </summary>
@@ -39,7 +47,7 @@ public static class DialogUtilities
         setter(listener);
     }
 
-    private static Action<DialogCloseListener> GetListenerSetter(IDialogAware dialogAware, Type type)
+    private static Action<DialogCloseListener> GetListenerSetter(IDialogAware dialogAware, [DynamicallyAccessedMembers(ListenerMembers)] Type type)
     {
         var propInfo = type.GetProperty(nameof(IDialogAware.RequestClose));
 

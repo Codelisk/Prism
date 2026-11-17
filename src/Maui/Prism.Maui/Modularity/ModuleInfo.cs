@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using Prism.Properties;
 
@@ -14,6 +15,10 @@ namespace Prism.Modularity;
 #endif
 public partial class ModuleInfo : IModuleInfo
 {
+    // The container creates the module (ModuleInitializer), so its constructors must survive trimming.
+    private const DynamicallyAccessedMemberTypes ModuleConstructors =
+        DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors;
+
     /// <summary>
     /// Initializes a new empty instance of <see cref="ModuleInfo"/>.
     /// </summary>
@@ -28,22 +33,10 @@ public partial class ModuleInfo : IModuleInfo
     /// <param name="type">The module <see cref="Type"/>'s AssemblyQualifiedName.</param>
     /// <param name="dependsOn">The modules this instance depends on.</param>
     /// <exception cref="ArgumentNullException">An <see cref="ArgumentNullException"/> is thrown if <paramref name="dependsOn"/> is <see langword="null"/>.</exception>
-    public ModuleInfo(string name, string type, params string[] dependsOn)
+    public ModuleInfo(string name, [DynamicallyAccessedMembers(ModuleConstructors)] string type, params string[] dependsOn)
     {
-        if (string.IsNullOrWhiteSpace(name))
-            throw new ArgumentNullException(nameof(name));
-        if (dependsOn == null)
-            throw new ArgumentNullException(nameof(dependsOn));
-
-        ModuleType = Type.GetType(type) ?? throw new ArgumentNullException(nameof(type));
-        ModuleName = name;
-        foreach (string dependency in dependsOn)
-        {
-            if (!DependsOn.Contains(dependency))
-            {
-                DependsOn.Add(dependency);
-            }
-        }
+        ValidateArguments(name, dependsOn);
+        Initialize(name, Type.GetType(type) ?? throw new ArgumentNullException(nameof(type)), dependsOn);
     }
 
     /// <summary>
@@ -51,7 +44,7 @@ public partial class ModuleInfo : IModuleInfo
     /// </summary>
     /// <param name="name">The module's name.</param>
     /// <param name="type">The module's type.</param>
-    public ModuleInfo(string name, string type)
+    public ModuleInfo(string name, [DynamicallyAccessedMembers(ModuleConstructors)] string type)
         : this(name, type, Array.Empty<string>())
     {
     }
@@ -60,7 +53,7 @@ public partial class ModuleInfo : IModuleInfo
     /// Initializes a new instance of <see cref="ModuleInfo"/>.
     /// </summary>
     /// <param name="moduleType">The module's type.</param>
-    public ModuleInfo(Type moduleType)
+    public ModuleInfo([DynamicallyAccessedMembers(ModuleConstructors)] Type moduleType)
         : this(moduleType, moduleType.Name) { }
 
     /// <summary>
@@ -68,7 +61,7 @@ public partial class ModuleInfo : IModuleInfo
     /// </summary>
     /// <param name="moduleType">The module's type.</param>
     /// <param name="moduleName">The module's name.</param>
-    public ModuleInfo(Type moduleType, string moduleName)
+    public ModuleInfo([DynamicallyAccessedMembers(ModuleConstructors)] Type moduleType, string moduleName)
         : this(moduleType, moduleName, InitializationMode.WhenAvailable) { }
 
     /// <summary>
@@ -77,10 +70,34 @@ public partial class ModuleInfo : IModuleInfo
     /// <param name="moduleType">The module's type.</param>
     /// <param name="moduleName">The module's name.</param>
     /// <param name="initializationMode">The module's <see cref="InitializationMode"/>.</param>
-    public ModuleInfo(Type moduleType, string moduleName, InitializationMode initializationMode)
-        : this(moduleName, moduleType.AssemblyQualifiedName)
+    /// <param name="dependsOn">The modules this instance depends on.</param>
+    public ModuleInfo([DynamicallyAccessedMembers(ModuleConstructors)] Type moduleType, string moduleName, InitializationMode initializationMode, params string[] dependsOn)
     {
+        // Same checks and order as the name-based constructor, without loading the type again by its name.
+        ValidateArguments(moduleName, dependsOn);
+        Initialize(moduleName, moduleType, dependsOn);
         InitializationMode = initializationMode;
+    }
+
+    private static void ValidateArguments(string name, string[] dependsOn)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentNullException(nameof(name));
+        if (dependsOn == null)
+            throw new ArgumentNullException(nameof(dependsOn));
+    }
+
+    private void Initialize(string name, [DynamicallyAccessedMembers(ModuleConstructors)] Type moduleType, string[] dependsOn)
+    {
+        ModuleType = moduleType;
+        ModuleName = name;
+        foreach (string dependency in dependsOn)
+        {
+            if (!DependsOn.Contains(dependency))
+            {
+                DependsOn.Add(dependency);
+            }
+        }
     }
 
     private string _moduleName;
@@ -94,17 +111,20 @@ public partial class ModuleInfo : IModuleInfo
         set => _moduleName = value;
     }
 
+    [DynamicallyAccessedMembers(ModuleConstructors)]
     string IModuleInfo.ModuleType
     {
         get => ModuleType.AssemblyQualifiedName;
         set => ModuleType = Type.GetType(value);
     }
 
+    [DynamicallyAccessedMembers(ModuleConstructors)]
     private Type _moduleType;
     /// <summary>
     /// Gets or sets the module <see cref="Type"/>'s AssemblyQualifiedName.
     /// </summary>
     /// <value>The type of the module.</value>
+    [DynamicallyAccessedMembers(ModuleConstructors)]
     public Type ModuleType
     {
         get => _moduleType;
