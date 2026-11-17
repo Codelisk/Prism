@@ -8,16 +8,14 @@
       <ContentPage prism:TabbedPage.Title="Prism Tab" />
     </TabbedPage>
   </ContentPage.Resources>
+  <ContentPage.Behaviors>
+    <PageLifeCycleAwareBehavior />
+  </ContentPage.Behaviors>
   <VerticalStackLayout>
     <Button x:Name="GlobalParameterButton" CommandParameter="{Parameter Key=Message, Value=Global}" />
     <Button x:Name="CanonicalParameterButton" CommandParameter="{prism:Parameter Key=Message, Value=Canonical}" />
     <Button x:Name="NavigationButton" Command="{prism:NavigateTo NextPage}" />
     <Button x:Name="BackButton" Command="{prism:GoBack}" />
     <Button x:Name="DialogButton" Command="{ShowDialog SampleDialog}" />
-    <Button x:Name="BehaviorButton">
-      <Button.Behaviors>
-        <EventToCommandBehavior EventName="Clicked" />
-      </Button.Behaviors>
-    </Button>
   </VerticalStackLayout>
 </ContentPage>

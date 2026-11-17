@@ -79,7 +79,7 @@ public abstract class TargetAwareExtensionBase<T> : BindableObject, IMarkupExten
 
         TargetElement = valueTargetProvider.TargetObject as VisualElement;
 
-        //this is handling the scenario of the extension being used within the EventToCommandBehavior
+        //this is handling the scenario of the extension being used within a behavior
         if (TargetElement is null && valueTargetProvider.TargetObject is BehaviorBase<BindableObject> behavior)
             TargetElement = behavior.AssociatedObject as VisualElement;
 

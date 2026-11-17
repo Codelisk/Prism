@@ -25,7 +25,7 @@ public class ParameterExtensionFixture
         Assert.NotNull(page.FindByName<Button>("NavigationButton").Command);
         Assert.NotNull(page.FindByName<Button>("BackButton").Command);
         Assert.NotNull(page.FindByName<Button>("DialogButton").Command);
-        Assert.IsType<EventToCommandBehavior>(Assert.Single(page.FindByName<Button>("BehaviorButton").Behaviors));
+        Assert.IsType<PageLifeCycleAwareBehavior>(Assert.Single(page.Behaviors));
         var tabs = Assert.IsType<Microsoft.Maui.Controls.TabbedPage>(page.Resources["Tabs"]);
         Assert.Equal("Prism Tab", Prism.Navigation.Xaml.TabbedPage.GetTitle(Assert.Single(tabs.Children)));
     }
